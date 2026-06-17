@@ -34,14 +34,40 @@ class AuditLog extends Model
      */
     public static function registrar($accion, $modelo, $modeloId = null, $detalles = null)
     {
+        // Guard against missing request() or auth() contexts (console, jobs, tests)
+        try {
+            $ip = request()->ip();
+            $userAgent = request()->userAgent();
+        } catch (\Throwable $e) {
+            $ip = null;
+            $userAgent = null;
+        }
+
+        $userId = null;
+        try {
+            $userId = auth()->id();
+        } catch (\Throwable $e) {
+            $userId = null;
+        }
+
+        // Normalize detalles: ensure it's an array for JSON casting
+        if ($detalles !== null && !is_array($detalles)) {
+            if (is_string($detalles)) {
+                $decoded = json_decode($detalles, true);
+                $detalles = $decoded ?? ['info' => $detalles];
+            } else {
+                $detalles = ['info' => (string) $detalles];
+            }
+        }
+
         return self::create([
-            'user_id' => auth()->id(),
+            'user_id' => $userId,
             'accion' => $accion,
             'modelo' => $modelo,
             'modelo_id' => $modeloId,
             'detalles' => $detalles,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'ip_address' => $ip,
+            'user_agent' => $userAgent,
         ]);
     }
 }
