@@ -36,6 +36,12 @@
                                     <div>Salud: {{ $e->salud_2 }}</div>
                                 </div>
                                 <div class="text-sm text-gray-600 mt-1">Puntaje: {{ $e->puntaje_total }}</div>
+                                @if($e->documento)
+                                <div class="text-sm mt-1">
+                                    <span class="font-medium">Documento:</span>
+                                    <a href="{{ asset('storage/' . $e->documento) }}" target="_blank" class="text-blue-600 hover:underline">Ver evidencia</a>
+                                </div>
+                                @endif
                                 @if($e->observacion)
                                 <div class="text-sm mt-1 text-gray-500">
                                     <span class="font-medium">Observación:</span> {{ $e->observacion->texto }}

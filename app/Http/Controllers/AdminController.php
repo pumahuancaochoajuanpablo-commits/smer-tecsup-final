@@ -8,6 +8,7 @@ use App\Models\Estudiante;
 use App\Models\ParametroRiesgo;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Services\ReporteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +24,19 @@ class AdminController extends Controller
             ->groupBy('nivel_riesgo')
             ->pluck('total', 'nivel_riesgo');
 
-        return view('admin.dashboard', compact('totalEstudiantes', 'totalTutores', 'totalEntrevistas', 'riesgos'));
+        // Últimas 5 entrevistas
+        $ultimasEntrevistas = Entrevista::with(['asignacion.estudiante.user', 'asignacion.tutor.user'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard-new', compact(
+            'totalEstudiantes',
+            'totalTutores',
+            'totalEntrevistas',
+            'riesgos',
+            'ultimasEntrevistas'
+        ));
     }
 
     public function tutores()
@@ -163,5 +176,32 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.config')->with('success', 'Configuración actualizada.');
+    }
+
+    /**
+     * CUS08: Generar ficha individual en PDF
+     */
+    public function fichaIndividualPDF(Estudiante $estudiante)
+    {
+        $reporteService = new ReporteService();
+        return $reporteService->fichaIndividualPDF($estudiante);
+    }
+
+    /**
+     * CUS08: Generar informe general en PDF
+     */
+    public function informeGeneralPDF()
+    {
+        $reporteService = new ReporteService();
+        return $reporteService->informeGeneralPDF();
+    }
+
+    /**
+     * CUS08: Exportar entrevistas a Excel
+     */
+    public function exportarExcel()
+    {
+        $reporteService = new ReporteService();
+        return $reporteService->exportarEntrevistasExcel();
     }
 }

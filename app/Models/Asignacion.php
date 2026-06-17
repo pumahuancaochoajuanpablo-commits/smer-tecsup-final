@@ -8,7 +8,7 @@ class Asignacion extends Model
 {
     protected $table = 'asignaciones';
 
-    protected $fillable = ['tutor_id', 'estudiante_id', 'fecha_inicio'];
+    protected $fillable = ['tutor_id', 'estudiante_id', 'fecha_inicio', 'estado'];
 
     protected function casts(): array
     {

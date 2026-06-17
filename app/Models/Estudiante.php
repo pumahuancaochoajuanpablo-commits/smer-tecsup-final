@@ -8,7 +8,7 @@ class Estudiante extends Model
 {
     protected $table = 'estudiantes';
 
-    protected $fillable = ['user_id', 'codigo', 'carrera', 'estado'];
+    protected $fillable = ['user_id', 'codigo', 'carrera', 'ciclo', 'estado'];
 
     protected function casts(): array
     {

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorController;
+use App\Http\Controllers\AuditController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,6 +32,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/asignaciones', [AdminController::class, 'asignarTutoria'])->name('asignaciones.guardar');
     Route::get('/configuracion', [AdminController::class, 'configuracion'])->name('config');
     Route::post('/configuracion', [AdminController::class, 'guardarConfig'])->name('config.guardar');
+    
+    // CUS08: Rutas de reportes
+    Route::get('/reportes/ficha/{estudiante}', [AdminController::class, 'fichaIndividualPDF'])->name('reportes.ficha');
+    Route::get('/reportes/informe-general', [AdminController::class, 'informeGeneralPDF'])->name('reportes.informe');
+    Route::get('/reportes/exportar-excel', [AdminController::class, 'exportarExcel'])->name('reportes.excel');
+    
+    // CUS10: Rutas de auditoría
+    Route::get('/auditoria', [AuditController::class, 'index'])->name('auditoria.index');
+    Route::get('/auditoria/{log}', [AuditController::class, 'show'])->name('auditoria.show');
+    Route::get('/auditoria/exportar/excel', [AuditController::class, 'exportarExcel'])->name('auditoria.excel');
 });
 
 // Tutor routes

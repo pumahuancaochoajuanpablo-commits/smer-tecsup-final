@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('tutor.guardar') }}">
+                    <form method="POST" action="{{ route('tutor.guardar') }}" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="asignacion_id" value="{{ $asignacion->id }}">
 
@@ -41,6 +41,12 @@
                                 </select>
                             </div>
                             @endforeach
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Documento de evidencia</label>
+                            <input type="file" name="documento" class="w-full border-gray-300 rounded-md shadow-sm" accept="application/pdf,image/*">
+                            <p class="text-xs text-gray-500 mt-1">PDF, JPG o PNG hasta 5MB.</p>
                         </div>
 
                         <div class="mb-4">

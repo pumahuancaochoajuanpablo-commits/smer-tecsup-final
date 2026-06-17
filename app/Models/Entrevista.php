@@ -11,7 +11,7 @@ class Entrevista extends Model
     protected $fillable = [
         'asignacion_id', 'fecha',
         'acad_2', 'emoc_2', 'soc_2', 'econ_2', 'fam_2', 'salud_2',
-        'puntaje_total', 'nivel_riesgo',
+        'puntaje_total', 'nivel_riesgo', 'documento',
     ];
 
     protected function casts(): array

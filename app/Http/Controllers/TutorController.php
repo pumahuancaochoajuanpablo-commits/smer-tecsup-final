@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
+use App\Models\AuditLog;
 use App\Models\Entrevista;
 use App\Models\Estudiante;
 use App\Models\Notificacion;
@@ -58,6 +59,7 @@ class TutorController extends Controller
             'econ_2' => 'required|integer|min:1|max:5',
             'fam_2' => 'required|integer|min:1|max:5',
             'salud_2' => 'required|integer|min:1|max:5',
+            'documento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'observacion' => 'nullable|string',
         ]);
 
@@ -73,15 +75,17 @@ class TutorController extends Controller
         $umbralAlto = $params->first()->umbral_alto;
         $umbralMedio = $params->first()->umbral_medio;
 
-        if ($ponderado >= $umbralAlto) {
+        // Invertir la lógica: puntuaciones ALTAS (5=excelente) = riesgo BAJO
+        // puntuaciones BAJAS (1=muy bajo) = riesgo ALTO
+        if ($ponderado <= 3) {
             $nivel = 'alto';
-        } elseif ($ponderado >= $umbralMedio) {
+        } elseif ($ponderado <= 5) {
             $nivel = 'medio';
         } else {
             $nivel = 'bajo';
         }
 
-        $entrevista = Entrevista::create([
+        $datosEntrevista = [
             'asignacion_id' => $request->asignacion_id,
             'fecha' => $request->fecha,
             'acad_2' => $request->acad_2,
@@ -92,7 +96,13 @@ class TutorController extends Controller
             'salud_2' => $request->salud_2,
             'puntaje_total' => round($ponderado, 2),
             'nivel_riesgo' => $nivel,
-        ]);
+        ];
+
+        if ($request->hasFile('documento')) {
+            $datosEntrevista['documento'] = $request->file('documento')->store('entrevistas', 'public');
+        }
+
+        $entrevista = Entrevista::create($datosEntrevista);
 
         if ($request->filled('observacion')) {
             Observacion::create([
@@ -100,6 +110,14 @@ class TutorController extends Controller
                 'texto' => $request->observacion,
             ]);
         }
+
+        // CUS10: Registrar en auditoría
+        AuditLog::registrar('create', 'Entrevista', $entrevista->id, [
+            'asignacion_id' => $request->asignacion_id,
+            'estudiante' => $entrevista->asignacion->estudiante->codigo,
+            'puntaje' => $entrevista->puntaje_total,
+            'nivel_riesgo' => $nivel,
+        ]);
 
         if ($nivel === 'alto') {
             $asignacion = $entrevista->asignacion;
