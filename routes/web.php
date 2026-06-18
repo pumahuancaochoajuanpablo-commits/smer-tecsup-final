@@ -55,6 +55,13 @@ Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->grou
     Route::get('/entrevista/{estudiante}', [TutorController::class, 'nuevaEntrevista'])->name('entrevista');
     Route::post('/guardar-entrevista', [TutorController::class, 'guardarEntrevista'])->name('guardar');
     Route::get('/historial/{estudiante}', [TutorController::class, 'historial'])->name('historial');
+    
+    // CUS06: Derivaciones
+    Route::get('/derivaciones', [DerivacionController::class, 'index'])->name('derivaciones');
+    Route::get('/derivar/{estudianteId}', [DerivacionController::class, 'crear'])->name('derivar');
+    Route::post('/derivaciones/registrar', [DerivacionController::class, 'registrar'])->name('derivaciones.registrar');
+    Route::get('/derivaciones/{id}', [DerivacionController::class, 'ver'])->name('derivaciones.ver');
+    Route::put('/derivaciones/{id}/actualizar', [DerivacionController::class, 'actualizar'])->name('derivaciones.actualizar');
 });
 
 // Estudiante routes

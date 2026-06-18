@@ -68,7 +68,20 @@ class TutorController extends Controller
         $puntaje = 0;
 
         foreach ($campos as $campo) {
-            $puntaje += $request->$campo * ($params[$campo]->peso / 100);
+            $invertido = 6 - $request->$campo;
+            $puntaje += $invertido * ($params[$campo]->peso / 100);
+        }
+
+        $ponderado = ($puntaje / 5) * 10;
+        $umbralAlto = $params->first()->umbral_alto;
+        $umbralMedio = $params->first()->umbral_medio;
+
+        if ($ponderado >= $umbralAlto) {
+            $nivel = 'alto';
+        } elseif ($ponderado >= $umbralMedio) {
+            $nivel = 'medio';
+        } else {
+            $nivel = 'bajo';
         }
 
         $ponderado = ($puntaje / 5) * 10;
