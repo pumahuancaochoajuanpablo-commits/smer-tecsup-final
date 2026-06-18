@@ -5,6 +5,7 @@ use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\DerivacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,6 +43,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/auditoria', [AuditController::class, 'index'])->name('auditoria.index');
     Route::get('/auditoria/{log}', [AuditController::class, 'show'])->name('auditoria.show');
     Route::get('/auditoria/exportar/excel', [AuditController::class, 'exportarExcel'])->name('auditoria.excel');
+    
+    // CUS06: Rutas de derivaciones (solo para admin)
+    Route::get('/derivaciones/estadisticas', [DerivacionController::class, 'estadisticas'])->name('derivaciones.estadisticas');
+    Route::put('/derivaciones/{id}/actualizar', [DerivacionController::class, 'actualizar'])->name('derivaciones.actualizar');
 });
 
 // Tutor routes
@@ -57,6 +62,14 @@ Route::middleware(['auth', 'role:estudiante'])->prefix('estudiante')->name('estu
     Route::get('/mi-estado', [EstudianteController::class, 'miEstado'])->name('estado');
     Route::get('/notificaciones', [EstudianteController::class, 'notificaciones'])->name('notificaciones');
     Route::post('/notificaciones/leer', [EstudianteController::class, 'marcarLeido'])->name('notificaciones.leer');
+});
+
+// CUS06: Rutas compartidas de derivaciones (admin y tutor)
+Route::middleware(['auth', 'role:admin,tutor'])->group(function () {
+    Route::get('/derivaciones', [DerivacionController::class, 'index'])->name('derivaciones.index');
+    Route::get('/derivaciones/{id}', [DerivacionController::class, 'ver'])->name('derivaciones.ver');
+    Route::get('/derivar/{estudianteId}', [DerivacionController::class, 'crear'])->name('derivaciones.crear');
+    Route::post('/derivaciones/registrar', [DerivacionController::class, 'registrar'])->name('derivaciones.registrar');
 });
 
 require __DIR__ . '/auth.php';

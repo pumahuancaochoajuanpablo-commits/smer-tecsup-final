@@ -39,9 +39,12 @@
                                 <div>Última entrevista: {{ $est->fecha_ultima }}</div>
                                 @endif
                             </div>
-                            <div class="mt-3 flex gap-2">
+                            <div class="mt-3 flex gap-2 flex-wrap">
                                 <a href="{{ route('tutor.entrevista', $est->id) }}" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Nueva Entrevista</a>
                                 <a href="{{ route('tutor.historial', $est->id) }}" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700">Historial</a>
+                                @if($est->nivel_riesgo === 'alto')
+                                <a href="{{ route('derivaciones.crear', $est->id) }}" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">Derivar</a>
+                                @endif
                             </div>
                         </div>
                         @empty

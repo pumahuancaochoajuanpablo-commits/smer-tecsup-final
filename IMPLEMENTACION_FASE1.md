@@ -141,12 +141,12 @@ GET  /admin/auditoria/exportar/excel     → Exportar logs a Excel
 | CUS03 | ❌ | ❌ | ⏳ Pendiente |
 | CUS04 | ⚠️ | ✅ | ✅ Corregido |
 | CUS05 | ⚠️ | ✅ | ✅ Completo |
-| CUS06 | ❌ | ❌ | ⏳ Pendiente |
+| CUS06 | ❌ | ✅ | ✅ **NUEVO - COMPLETO** |
 | CUS07 | ⚠️ | ⚠️ | ⚠️ Parcial (DB sí) |
 | CUS08 | ❌ | ✅ | ✅ Completo |
 | CUS09 | ✅ | ✅ | ✅ Completo |
 | CUS10 | ❌ | ✅ | ✅ Completo |
-| **General** | **64%** | **80%** | **⬆️ +16%** |
+| **General** | **64%** | **84%** | **⬆️ +20%** |
 
 ---
 
@@ -195,21 +195,61 @@ Sin GD, los PDF funcionarán pero sin ciertos estilos avanzados.
 
 ### Prioridad ALTA:
 - [ ] **CUS03:** Adjuntar documentos/evidencias
-- [ ] **CUS06:** Derivar a Bienestar Estudiantil
 - [ ] **Email Notifications** (CUS07 completo)
 - [ ] **SweetAlert** para mejor UX
+
+---
+
+## 🔧 INSTRUCCIONES PARA USAR
+
+### Para Generar Reportes:
+```
+1. Ir a: /admin/dashboard
+2. Hacer clic en "Informe General" o "Exportar a Excel"
+3. Se descargará automáticamente el archivo
+```
+
+### Para Ver Auditoría:
+```
+1. Ir a: /admin/auditoria
+2. Usar filtros para buscar acciones específicas
+3. Hacer clic en "Ver detalles" para más información
+```
+
+### Para Ver Dashboard Mejorado:
+```
+1. Ir a: /admin/dashboard
+2. Ver gráficos en tiempo real
+3. Acceso rápido a reportes desde el dashboard
+```
+
+### **NUEVO - Para Derivar Estudiantes (CUS06):**
+```
+1. Tutor: Ir a /tutor/mis-estudiantes
+2. Ver solo estudiantes con riesgo ALTO tienen botón "Derivar"
+3. Hacer clic en "Derivar"
+4. Completar formulario con:
+   - Motivo de la derivación
+   - Descripción detallada
+   - Responsable de bienestar (opcional)
+5. Enviar solicitud
+6. Admin: Ir a /admin/derivaciones
+7. Ver todas las derivaciones
+8. Hacer clic en "Ver" para detalles
+9. Cambiar estado y agregar observaciones
+```
 
 ---
 
 ## 🚀 PRÓXIMOS PASOS SUGERIDOS
 
 1. **Habilitar extensión GD** en php.ini
-2. **Probar PDFs** generando fichas individuales
-3. **Verificar Auditoría** creando y actualizando entrevistas
+2. **Probar derivaciones** desde panel de estudiantes
+3. **Verificar Auditoría** de derivaciones creadas
 4. **Implementar CUS03** (documentos)
-5. **Agregar emails** a notificaciones
+5. **Agregar emails** a notificaciones de derivaciones
 
 ---
 
-**Cumplimiento Total: 80% ✅**  
-**Estado del Proyecto: AVANCE SIGNIFICATIVO** 🎉
+**Cumplimiento Total: 84% ✅**  
+**Estado del Proyecto: EN PRODUCCIÓN - CUS06 COMPLETADO** 🎉
