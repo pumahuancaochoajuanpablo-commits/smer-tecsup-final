@@ -204,9 +204,9 @@ ADMIN puede ver en:
 
 | Rol | Permisos |
 |-----|----------|
-| **Tutor** | Crear derivaciones, Ver derivaciones, Ver detalles |
-| **Admin** | Todo + Actualizar estado, Ver estadísticas, Cambiar responsable |
-| **Estudiante** | No acceso |
+| **Tutor** | ✅ Crear derivaciones, Ver derivaciones, Ver detalles, Actualizar estado, Ver estadísticas |
+| **Admin** | ✅ Crear derivaciones, Ver derivaciones, Ver detalles, Actualizar estado, Ver estadísticas |
+| **Estudiante** | ❌ No acceso |
 
 ---
 

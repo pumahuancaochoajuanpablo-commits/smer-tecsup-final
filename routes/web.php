@@ -70,6 +70,8 @@ Route::middleware(['auth', 'role:admin,tutor'])->group(function () {
     Route::get('/derivaciones/{id}', [DerivacionController::class, 'ver'])->name('derivaciones.ver');
     Route::get('/derivar/{estudianteId}', [DerivacionController::class, 'crear'])->name('derivaciones.crear');
     Route::post('/derivaciones/registrar', [DerivacionController::class, 'registrar'])->name('derivaciones.registrar');
+    Route::get('/derivaciones/estadisticas', [DerivacionController::class, 'estadisticas'])->name('derivaciones.estadisticas');
+    Route::put('/derivaciones/{id}/actualizar', [DerivacionController::class, 'actualizar'])->name('derivaciones.actualizar');
 });
 
 require __DIR__ . '/auth.php';
