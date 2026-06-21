@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         $route = match ($user->rol->nombre) {
             'admin'      => 'admin.dashboard',
-            'tutor'      => 'tutor.estudiantes',
+            'tutor'      => 'tutor.dashboard',
             'estudiante' => 'estudiante.estado',
             default      => 'dashboard',
         };

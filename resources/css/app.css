@@ -1,3 +1,164 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   TECSUP THEME — Variables y estilos base globales
+   Aplica automáticamente a todos los layouts y componentes
+   ============================================================ */
+
+@layer base {
+    :root {
+        --tecsup-cyan:   #0CB9D7;
+        --tecsup-dark:   #0C2333;
+        --tecsup-gray:   #333333;
+        --tecsup-green:  #2DC000;
+        --tecsup-light:  #E8F8FC;
+        --tecsup-border: #B0E8F3;
+    }
+
+    html {
+        font-family: 'Inter', 'Figtree', sans-serif;
+    }
+
+    body {
+        @apply text-tecsup-gray bg-tecsup-light;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply text-tecsup-dark font-semibold;
+    }
+
+    /* Scrollbar sutil con colores Tecsup */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--tecsup-light); }
+    ::-webkit-scrollbar-thumb { background: var(--tecsup-border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--tecsup-cyan); }
+}
+
+@layer components {
+
+    /* ── NAVBAR ── */
+    .tecsup-nav {
+        @apply bg-tecsup-dark border-b-2 border-tecsup-cyan shadow-md;
+    }
+    .tecsup-nav a {
+        @apply text-white;
+    }
+
+    /* ── SIDEBAR / PANEL LATERAL ── */
+    .tecsup-sidebar {
+        @apply bg-tecsup-dark text-white min-h-screen w-64 flex flex-col;
+    }
+    .tecsup-sidebar-header {
+        @apply bg-tecsup-cyan px-6 py-4 flex items-center gap-3;
+    }
+    .tecsup-sidebar-link {
+        @apply flex items-center gap-3 px-6 py-3 text-sm text-white/80
+               hover:bg-tecsup-cyan/20 hover:text-white transition-colors duration-150;
+    }
+    .tecsup-sidebar-link.active {
+        @apply bg-tecsup-cyan text-white font-semibold;
+    }
+
+    /* ── CARDS ── */
+    .tecsup-card {
+        @apply bg-white rounded-xl shadow-sm border border-tecsup-border p-6;
+    }
+    .tecsup-card-header {
+        @apply text-tecsup-dark font-semibold text-lg border-b border-tecsup-border pb-3 mb-4;
+    }
+
+    /* ── STAT CARDS (dashboard KPIs) ── */
+    .tecsup-stat {
+        @apply bg-white rounded-xl shadow-sm border border-tecsup-border p-5
+               flex flex-col gap-1;
+    }
+    .tecsup-stat-value {
+        @apply text-3xl font-bold text-tecsup-cyan;
+    }
+    .tecsup-stat-label {
+        @apply text-sm text-gray-500;
+    }
+
+    /* ── BOTONES ── */
+    .btn-tecsup-primary {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
+               bg-tecsup-cyan text-white text-sm font-semibold
+               hover:bg-[#0aa5bf] active:bg-tecsup-dark
+               focus:outline-none focus:ring-2 focus:ring-tecsup-cyan focus:ring-offset-2
+               transition-colors duration-150;
+    }
+    .btn-tecsup-success {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
+               bg-tecsup-green text-white text-sm font-semibold
+               hover:bg-[#27a800] active:bg-green-700
+               focus:outline-none focus:ring-2 focus:ring-tecsup-green focus:ring-offset-2
+               transition-colors duration-150;
+    }
+    .btn-tecsup-dark {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
+               bg-tecsup-dark text-white text-sm font-semibold
+               hover:bg-[#0e2d45]
+               focus:outline-none focus:ring-2 focus:ring-tecsup-dark focus:ring-offset-2
+               transition-colors duration-150;
+    }
+    .btn-tecsup-outline {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
+               border-2 border-tecsup-cyan text-tecsup-cyan text-sm font-semibold
+               hover:bg-tecsup-cyan hover:text-white
+               focus:outline-none focus:ring-2 focus:ring-tecsup-cyan focus:ring-offset-2
+               transition-colors duration-150;
+    }
+
+    /* ── INPUTS ── */
+    .tecsup-input {
+        @apply w-full rounded-lg border border-tecsup-border bg-white px-3 py-2 text-sm text-tecsup-gray
+               focus:border-tecsup-cyan focus:ring-2 focus:ring-tecsup-cyan/30 focus:outline-none
+               placeholder:text-gray-400 transition-colors duration-150;
+    }
+    .tecsup-label {
+        @apply block text-sm font-medium text-tecsup-dark mb-1;
+    }
+
+    /* ── TABLA ── */
+    .tecsup-table {
+        @apply w-full text-sm text-left text-tecsup-gray;
+    }
+    .tecsup-table thead {
+        @apply bg-tecsup-dark text-white text-xs uppercase tracking-wider;
+    }
+    .tecsup-table thead th {
+        @apply px-4 py-3;
+    }
+    .tecsup-table tbody tr {
+        @apply border-b border-tecsup-border hover:bg-tecsup-light transition-colors duration-100;
+    }
+    .tecsup-table tbody td {
+        @apply px-4 py-3;
+    }
+
+    /* ── BADGES DE RIESGO ── */
+    .badge-alto   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700; }
+    .badge-medio  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700; }
+    .badge-bajo   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700; }
+
+    /* ── PAGE WRAPPER ── */
+    .tecsup-page {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+    }
+    .tecsup-page-title {
+        @apply text-2xl font-bold text-tecsup-dark mb-6;
+    }
+
+    /* ── ALERTS ── */
+    .tecsup-alert-info {
+        @apply bg-tecsup-light border border-tecsup-border text-tecsup-dark rounded-lg px-4 py-3 text-sm;
+    }
+    .tecsup-alert-success {
+        @apply bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm;
+    }
+    .tecsup-alert-danger {
+        @apply bg-red-50 border border-red-200 text-red-800 rounded-lg px-4 py-3 text-sm;
+    }
+}

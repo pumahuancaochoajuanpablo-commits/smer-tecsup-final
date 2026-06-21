@@ -1,58 +1,106 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Mis Estudiantes') }}
-        </h2>
-    </x-slot>
+    <x-slot name="header">Mis Estudiantes</x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
-            @endif
-            @if(session('recomendacion'))
-                <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">{{ session('recomendacion') }}</div>
-            @endif
+    @if(session('success'))
+        <div class="tecsup-alert-success mb-4">{{ session('success') }}</div>
+    @endif
+    @if(session('recomendacion'))
+        <div class="tecsup-alert-info mb-4"><strong>Recomendación:</strong> {{ session('recomendacion') }}</div>
+    @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Estudiantes Asignados</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @forelse($estudiantes as $est)
-                        <div class="border rounded-lg p-4 hover:shadow-md transition">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="font-semibold">{{ $est->nombre }}</span>
-                                @php
-                                    $color = match($est->nivel_riesgo) {
-                                        'alto' => 'bg-red-500',
-                                        'medio' => 'bg-yellow-500',
-                                        'bajo' => 'bg-green-500',
-                                        default => 'bg-gray-400',
-                                    };
-                                @endphp
-                                <span class="{{ $color }} text-white text-xs px-2 py-1 rounded-full">{{ strtoupper($est->nivel_riesgo) }}</span>
-                            </div>
-                            <div class="text-sm text-gray-600">
-                                <div>Código: {{ $est->codigo }}</div>
-                                <div>Carrera: {{ $est->carrera }}</div>
-                                @if($est->fecha_ultima)
-                                <div>Última entrevista: {{ $est->fecha_ultima }}</div>
-                                @endif
-                            </div>
-                            <div class="mt-3 flex gap-2 flex-wrap">
-                                <a href="{{ route('tutor.entrevista', $est->id) }}" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">Nueva Entrevista</a>
-                                <a href="{{ route('tutor.historial', $est->id) }}" class="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700">Historial</a>
-                                @if($est->nivel_riesgo === 'alto')
-                                <a href="{{ route('derivaciones.crear', $est->id) }}" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">Derivar</a>
-                                @endif
-                            </div>
-                        </div>
-                        @empty
-                        <div class="col-span-full text-center text-gray-500 py-8">No tienes estudiantes asignados</div>
-                        @endforelse
-                    </div>
-                </div>
+    <div class="bg-white rounded-xl shadow border border-tecsup-border">
+
+        {{-- Header de la card --}}
+        <div class="px-6 py-4 border-b border-tecsup-border flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-2 text-tecsup-dark font-semibold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+                Alumnos Asignados
             </div>
+            {{-- Buscador --}}
+            <input type="text"
+                   id="buscador"
+                   placeholder="Buscar por nombre..."
+                   class="tecsup-input max-w-xs text-sm"
+                   onkeyup="filtrarEstudiantes()">
+        </div>
+
+        {{-- Tabla lista --}}
+        <div class="overflow-x-auto">
+            <table class="tecsup-table" id="tablaEstudiantes">
+                <thead>
+                    <tr>
+                        <th>Estudiante</th>
+                        <th>Carrera / Ciclo</th>
+                        <th>Código</th>
+                        <th>Último Riesgo</th>
+                        <th>Última Entrevista</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($estudiantes as $est)
+                    @php
+                        $badgeClass = match($est->nivel_riesgo) {
+                            'alto'  => 'badge-alto',
+                            'medio' => 'badge-medio',
+                            'bajo'  => 'badge-bajo',
+                            default => 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-500',
+                        };
+                    @endphp
+                    <tr class="fila-estudiante">
+                        <td class="font-medium text-tecsup-dark nombre-est">{{ $est->nombre }}</td>
+                        <td class="text-gray-500">{{ $est->carrera }}{{ $est->ciclo ? ' - ' . $est->ciclo : '' }}</td>
+                        <td class="text-gray-400 text-xs font-mono">{{ $est->codigo }}</td>
+                        <td>
+                            <span class="{{ $badgeClass }}">{{ strtoupper($est->nivel_riesgo) }}</span>
+                        </td>
+                        <td class="text-gray-400 text-sm">
+                            {{ $est->fecha_ultima ? \Carbon\Carbon::parse($est->fecha_ultima)->format('d/m/Y') : '—' }}
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <a href="{{ route('tutor.entrevista', $est->id) }}"
+                                   class="btn-tecsup-success text-xs py-1 px-3">
+                                    Entrevistar
+                                </a>
+                                <a href="{{ route('tutor.historial', $est->id) }}"
+                                   class="btn-tecsup-outline text-xs py-1 px-3">
+                                    Historial
+                                </a>
+                                @if($est->nivel_riesgo === 'alto')
+                                <a href="{{ route('derivaciones.crear', $est->id) }}"
+                                   class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors">
+                                    Derivar
+                                </a>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-gray-400 py-10">
+                            No tienes estudiantes asignados.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function filtrarEstudiantes() {
+            const filtro = document.getElementById('buscador').value.toLowerCase();
+            document.querySelectorAll('.fila-estudiante').forEach(fila => {
+                const nombre = fila.querySelector('.nombre-est').textContent.toLowerCase();
+                fila.style.display = nombre.includes(filtro) ? '' : 'none';
+            });
+        }
+    </script>
+    @endpush
 </x-app-layout>

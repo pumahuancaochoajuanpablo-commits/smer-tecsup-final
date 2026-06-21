@@ -12,7 +12,18 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                tecsup: {
+                    cyan:    '#0CB9D7',   // Azul-cyan Tecsup
+                    dark:    '#0C2333',   // Azul oscuro Tecsup
+                    gray:    '#333333',   // Gris texto
+                    green:   '#2DC000',   // Verde botones acción
+                    white:   '#FFFFFF',
+                    light:   '#E8F8FC',   // Fondo suave derivado del cyan
+                    border:  '#B0E8F3',   // Borde suave
+                },
             },
         },
     },

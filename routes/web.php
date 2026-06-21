@@ -51,10 +51,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // Tutor routes
 Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->group(function () {
+    Route::get('/dashboard', [TutorController::class, 'dashboard'])->name('dashboard');
     Route::get('/mis-estudiantes', [TutorController::class, 'misEstudiantes'])->name('estudiantes');
     Route::get('/entrevista/{estudiante}', [TutorController::class, 'nuevaEntrevista'])->name('entrevista');
     Route::post('/guardar-entrevista', [TutorController::class, 'guardarEntrevista'])->name('guardar');
     Route::get('/historial/{estudiante}', [TutorController::class, 'historial'])->name('historial');
+    Route::get('/observaciones', [TutorController::class, 'observaciones'])->name('observaciones');
+    Route::post('/observaciones/guardar', [TutorController::class, 'guardarObservacion'])->name('observaciones.guardar');
+    Route::get('/alertas', [TutorController::class, 'alertas'])->name('alertas');
     
     // CUS06: Derivaciones
     Route::get('/derivaciones', [DerivacionController::class, 'index'])->name('derivaciones');

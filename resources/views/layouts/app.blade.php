@@ -1,41 +1,210 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'SMER - Tecsup') }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: false }">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    {{-- TOPBAR BLANCA SUPERIOR --}}
+    <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-white flex items-center justify-between px-4 sm:px-8">
+        <div class="flex items-center gap-3">
+            <button @click="sidebarOpen = !sidebarOpen"
+                    class="sm:hidden text-tecsup-dark/70 hover:text-tecsup-dark p-1 rounded focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <span class="text-tecsup-cyan font-bold text-lg sm:text-xl tracking-wide">
+                Sistema de Monitoreo Estudiantil
+            </span>
+        </div>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        @auth
+        <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
+        </svg>
+        @endauth
+    </header>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <div class="flex pt-16 min-h-screen">
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+        {{-- Overlay mobile --}}
+        <div x-show="sidebarOpen"
+             @click="sidebarOpen = false"
+             class="fixed inset-0 z-30 bg-black/50 sm:hidden"
+             style="display:none;">
+        </div>
+
+        {{-- SIDEBAR --}}
+        <aside  class="fixed top-[80px] left-4 bottom-4 z-40
+                    w-64 rounded-[30px]
+                    bg-tecsup-cyan shadow-xl
+                    flex flex-col
+                    transform transition-transform duration-200 ease-in-out
+                    -translate-x-full sm:translate-x-0"
+                :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
+                x-cloak>
+
+            {{-- Logo --}}
+            <div class="px-4 py-4 flex items-center justify-center border-b border-white/25">
+                <img src="{{ asset('logo-tecsup.png') }}"
+                     alt="Tecsup"
+                     class="h-9 w-auto object-contain brightness-0 invert">
+            </div>
+
+            @auth
+            @php $rolNombre = Auth::user()->rol->nombre; @endphp
+            <nav class="flex-1 py-3 overflow-y-auto">
+
+                {{-- ── TUTOR ──
+                     Rutas reales: tutor.estudiantes | tutor.derivaciones
+                     tutor.entrevista y tutor.historial requieren {estudiante} ID
+                     → se acceden desde la lista de estudiantes, no desde el sidebar
+                --}}
+                @if($rolNombre === 'tutor')
+
+                    <x-sidebar-link href="{{ route('tutor.dashboard') }}"
+                        :active="request()->routeIs('tutor.dashboard')"
+                        icon="dashboard">
+                        Dashboard
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('tutor.estudiantes') }}"
+                        :active="request()->routeIs('tutor.estudiantes')"
+                        icon="students">
+                        Mis alumnos
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('tutor.observaciones') }}"
+                        :active="request()->routeIs('tutor.observaciones')"
+                        icon="observations">
+                        Observaciones
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('tutor.alertas') }}"
+                        :active="request()->routeIs('tutor.alertas')"
+                        icon="alert">
+                        Alertas
+                    </x-sidebar-link>
+
+                {{-- ── ADMIN ──
+                     Rutas reales: admin.dashboard | admin.tutores | admin.importar
+                     admin.asignaciones | admin.config | admin.auditoria.index
+                --}}
+                @elseif($rolNombre === 'admin')
+
+                    <x-sidebar-link href="{{ route('admin.dashboard') }}"
+                        :active="request()->routeIs('admin.dashboard')"
+                        icon="dashboard">
+                        Dashboard
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('admin.tutores') }}"
+                        :active="request()->routeIs('admin.tutores')"
+                        icon="students">
+                        Tutores
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('admin.importar') }}"
+                        :active="request()->routeIs('admin.importar')"
+                        icon="import">
+                        Importar
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('admin.asignaciones') }}"
+                        :active="request()->routeIs('admin.asignaciones')"
+                        icon="assign">
+                        Asignaciones
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('admin.config') }}"
+                        :active="request()->routeIs('admin.config')"
+                        icon="config">
+                        Configuración
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('admin.auditoria.index') }}"
+                        :active="request()->routeIs('admin.auditoria*')"
+                        icon="audit">
+                        Auditoría
+                    </x-sidebar-link>
+
+                {{-- ── ESTUDIANTE ──
+                     Rutas reales: estudiante.estado | estudiante.notificaciones
+                --}}
+                @elseif($rolNombre === 'estudiante')
+
+                    <x-sidebar-link href="{{ route('estudiante.estado') }}"
+                        :active="request()->routeIs('estudiante.estado')"
+                        icon="dashboard">
+                        Mi Estado
+                    </x-sidebar-link>
+
+                    <x-sidebar-link href="{{ route('estudiante.notificaciones') }}"
+                        :active="request()->routeIs('estudiante.notificaciones')"
+                        icon="alert">
+                        Notificaciones
+                    </x-sidebar-link>
+
+                @endif
+            </nav>
+            @endauth
+
+            @auth
+            <div class="p-4 border-t border-white/25">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="w-full border-2 border-white text-white text-xs font-bold py-2 px-3 rounded-lg
+                                   hover:bg-white hover:text-tecsup-cyan transition-colors duration-150 uppercase tracking-widest">
+                        Cerrar sesión
+                    </button>
+                </form>
+            </div>
+            @endauth
+        </aside>
+
+        {{-- CONTENIDO PRINCIPAL --}}
+        <main class="flex-1 sm:ml-[296px] bg-gray-50 min-h-screen flex flex-col">
+            <div class="p-4 sm:p-6 flex-1">
+                @isset($header)
+                @auth
+                @php $rolNombre = Auth::user()->rol->nombre; @endphp
+                <div class="bg-tecsup-dark text-white rounded-full px-5 sm:px-6 py-3 mb-6 shadow-md flex items-center justify-between gap-3
+                            [&_h1]:!text-white [&_h2]:!text-white [&_h1]:!font-bold [&_h2]:!font-bold">
+                    <div class="text-base sm:text-lg tracking-wide text-white truncate">{{ $header }}</div>
+                    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <div class="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5">
+                            <svg class="w-4 h-4 text-white/70 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-white text-sm font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
+                            <span class="text-white text-sm font-medium sm:hidden">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                        </div>
+                        <span class="bg-tecsup-cyan text-white text-xs font-bold px-3 py-1 rounded-full capitalize">
+                            {{ ucfirst($rolNombre) }}
+                        </span>
                     </div>
-                </header>
-            @endisset
+                </div>
+                @endauth
+                @endisset
 
-            <!-- Page Content -->
-            <main>
                 @isset($slot)
                     {{ $slot }}
                 @else
                     @yield('content')
                 @endisset
-            </main>
-        </div>
-        @stack('scripts')
-    </body>
+            </div>
+        </main>
+    </div>
+
+    @stack('scripts')
+</body>
 </html>
