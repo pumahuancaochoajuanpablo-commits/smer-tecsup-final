@@ -3,6 +3,11 @@ set -e
 
 export PORT="${PORT:-8080}"
 
+if ! php -r '$key = getenv("APP_KEY") ?: ""; $valid = str_starts_with($key, "base64:") || strlen($key) === 32; exit($valid ? 0 : 1);'; then
+    export APP_KEY="$(php artisan key:generate --show --no-ansi)"
+    echo "Generated runtime Laravel APP_KEY because the configured value was missing or incompatible."
+fi
+
 sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
 
 cat > /etc/apache2/sites-available/000-default.conf <<APACHE
