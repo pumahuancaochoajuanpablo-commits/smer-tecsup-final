@@ -47,24 +47,20 @@ QUEUE_CONNECTION=database
 RUN_SEEDERS=true
 ```
 
-## Recuperacion real de contrasena por correo
+## Recuperacion real de contrasena por correo en Render Free
 
-Laravel ya incluye la pantalla `Olvide mi contrasena`, pero solo enviara correos reales si configuras un proveedor SMTP en Render. Si dejas `MAIL_MAILER=log`, el enlace se genera pero queda en los logs del servidor.
+Laravel ya incluye la pantalla `Olvide mi contrasena`. En Render Free no conviene usar SMTP porque Render bloquea la salida a los puertos SMTP 25, 465 y 587. Por eso el proyecto envia los enlaces de recuperacion usando la API HTTPS de Brevo.
 
 Variables necesarias:
 
 ```env
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.tu-proveedor.com
-MAIL_PORT=587
-MAIL_USERNAME=usuario-smtp
-MAIL_PASSWORD=password-smtp
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=no-reply@tu-dominio.com
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS=correo-verificado-en-brevo@dominio.com
 MAIL_FROM_NAME="SMER Tecsup"
+BREVO_API_KEY=tu_api_key_de_brevo
 ```
 
-Para una demo puedes usar un SMTP gratuito o de prueba. Para produccion real, usa un correo institucional o un proveedor transaccional.
+El `MAIL_FROM_ADDRESS` debe estar verificado como remitente en Brevo. Si se usa un plan pago de Render, tambien se puede volver a SMTP, pero para el plan gratuito la opcion estable es API.
 
 ## Base de datos gratis externa
 

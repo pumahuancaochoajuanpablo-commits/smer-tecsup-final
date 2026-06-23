@@ -46,13 +46,14 @@ class PasswordResetLinkController extends Controller
                 'mail_host' => config('mail.mailers.smtp.host'),
                 'mail_port' => config('mail.mailers.smtp.port'),
                 'mail_encryption' => config('mail.mailers.smtp.encryption'),
+                'brevo_api_configured' => filled(config('services.brevo.key')),
                 'error' => $exception->getMessage(),
             ]);
 
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors([
-                    'email' => 'No se pudo enviar el enlace. Revisa que Brevo tenga SMTP activo, que la clave SMTP sea correcta y que el correo remitente este verificado.',
+                    'email' => 'No se pudo enviar el enlace. Revisa que BREVO_API_KEY sea correcta y que el correo remitente este verificado en Brevo.',
                 ]);
         }
 
