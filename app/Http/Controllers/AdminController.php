@@ -10,8 +10,10 @@ use App\Models\Tutor;
 use App\Models\User;
 use App\Services\EntrevistaService;
 use App\Services\ReporteService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -79,18 +81,72 @@ class AdminController extends Controller
 
     public function importarCSV(Request $request)
     {
-        $request->validate(['archivo' => 'required|file|mimes:csv,txt']);
+        $request->validate([
+            'archivo' => 'required|file|mimes:csv,txt|max:2048',
+        ], [
+            'archivo.mimes' => 'El archivo debe ser CSV. Un TXT solo funciona si tiene formato CSV con columnas separadas por comas.',
+        ]);
 
-        $handle = fopen($request->file('archivo')->getRealPath(), 'r');
+        $file = $request->file('archivo');
+        $handle = fopen($file->getRealPath(), 'r');
+
+        if ($handle === false) {
+            return back()->with('errores', ['No se pudo abrir el archivo seleccionado.']);
+        }
+
         $headers = fgetcsv($handle, 0, ',');
+        $headers = is_array($headers)
+            ? array_map(fn ($header) => strtolower(trim((string) $header)), $headers)
+            : [];
+
+        $requeridas = ['email'];
+        $tieneNombre = in_array('nombre', $headers, true) || (in_array('apellidos', $headers, true) && in_array('nombres', $headers, true));
+
+        if (empty($headers) || count(array_intersect($requeridas, $headers)) !== count($requeridas) || ! $tieneNombre) {
+            fclose($handle);
+
+            return back()->with('errores', [
+                'Formato invalido. Usa un CSV con encabezados: nombre,email,codigo,carrera,ciclo,grupo,edad.',
+                'Tambien se acepta apellidos,nombres,email,codigo,especialidad,semestre,grupo,edad.',
+            ]);
+        }
+
         $importados = 0;
         $errores = [];
+        $fila = 1;
 
         while (($row = fgetcsv($handle, 0, ',')) !== false) {
+            $fila++;
+
+            if (count(array_filter($row, fn ($value) => trim((string) $value) !== '')) === 0) {
+                continue;
+            }
+
+            if (count($row) !== count($headers)) {
+                $errores[] = "Fila $fila: cantidad de columnas incorrecta.";
+                continue;
+            }
+
             $data = array_combine($headers, $row);
 
             try {
-                $nombre = $data['nombre'] ?? trim(($data['apellidos'] ?? '') . ' ' . ($data['nombres'] ?? ''));
+                $nombre = trim($data['nombre'] ?? trim(($data['apellidos'] ?? '') . ' ' . ($data['nombres'] ?? '')));
+                $data['email'] = strtolower(trim($data['email'] ?? ''));
+
+                $validator = Validator::make([
+                    'nombre' => $nombre,
+                    'email' => $data['email'],
+                    'edad' => $data['edad'] ?? null,
+                ], [
+                    'nombre' => 'required|string|max:255',
+                    'email' => 'required|email|unique:users,email',
+                    'edad' => 'nullable|integer|min:10|max:80',
+                ]);
+
+                if ($validator->fails()) {
+                    $errores[] = "Fila $fila: " . $validator->errors()->first();
+                    continue;
+                }
 
                 $user = User::create([
                     'name' => $nombre,
@@ -111,8 +167,10 @@ class AdminController extends Controller
                 ]);
 
                 $importados++;
+            } catch (QueryException $exception) {
+                $errores[] = "Fila $fila: no se pudo guardar. Verifica email unico y datos obligatorios.";
             } catch (\Throwable $exception) {
-                $errores[] = 'Fila ' . ($importados + 2) . ': ' . $exception->getMessage();
+                $errores[] = "Fila $fila: no se pudo procesar la fila.";
             }
         }
 

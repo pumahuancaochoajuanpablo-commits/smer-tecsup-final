@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: false }">
+<body class="font-sans antialiased bg-gray-100 overflow-x-hidden" x-data="{ sidebarOpen: false }">
     <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-white flex items-center justify-between px-4 sm:px-8 border-b border-gray-100">
         <div class="flex items-center gap-3">
             <button @click="sidebarOpen = !sidebarOpen"
@@ -20,7 +20,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <span class="text-tecsup-cyan font-bold text-lg sm:text-xl tracking-wide">
+            <span class="text-tecsup-cyan font-bold text-base sm:text-xl tracking-wide leading-tight">
                 Sistema de Monitoreo Estudiantil
             </span>
         </div>
@@ -42,8 +42,8 @@
              style="display:none;">
         </div>
 
-        <aside class="fixed top-[80px] left-4 bottom-4 z-40 w-64 rounded-[30px] bg-tecsup-cyan shadow-xl flex flex-col transform transition-transform duration-200 ease-in-out -translate-x-full sm:translate-x-0"
-               :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
+        <aside class="fixed top-[76px] left-3 sm:top-[80px] sm:left-4 bottom-4 z-40 w-[min(18rem,calc(100vw-1.5rem))] sm:w-64 rounded-[24px] sm:rounded-[30px] bg-tecsup-cyan shadow-xl flex flex-col transform transition-transform duration-200 ease-in-out -translate-x-[calc(100%+1.5rem)] sm:translate-x-0"
+               :class="{ 'translate-x-0': sidebarOpen, '-translate-x-[calc(100%+1.5rem)]': !sidebarOpen }"
                x-cloak>
             <div class="px-4 py-4 flex items-center justify-center border-b border-white/25">
                 <img src="{{ asset('logo-tecsup.png') }}"
@@ -114,12 +114,12 @@
         </aside>
 
         <main class="flex-1 sm:ml-[296px] bg-gray-50 min-h-screen flex flex-col">
-            <div class="p-4 sm:p-6 flex-1">
+            <div class="p-3 sm:p-6 flex-1">
                 @isset($header)
                 @auth
                 @php $rolNombre = Auth::user()->rol->nombre; @endphp
-                <div class="bg-tecsup-dark text-white rounded-full px-5 sm:px-6 py-3 mb-6 shadow-md flex items-center justify-between gap-3 [&_h1]:!text-white [&_h2]:!text-white [&_h1]:!font-bold [&_h2]:!font-bold">
-                    <div class="text-base sm:text-lg tracking-wide text-white truncate">{{ $header }}</div>
+                <div class="bg-tecsup-dark text-white rounded-2xl sm:rounded-full px-4 sm:px-6 py-3 mb-5 sm:mb-6 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 [&_h1]:!text-white [&_h2]:!text-white [&_h1]:!font-bold [&_h2]:!font-bold">
+                    <div class="text-lg sm:text-lg tracking-wide text-white leading-tight break-words">{{ $header }}</div>
                     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
                         <div class="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5">
                             <svg class="w-4 h-4 text-white/70 shrink-0" fill="currentColor" viewBox="0 0 20 20">
