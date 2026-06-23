@@ -33,6 +33,11 @@ class Entrevista extends Model
 
     public function observacion()
     {
-        return $this->hasOne(Observacion::class);
+        return $this->hasOne(Observacion::class)->latestOfMany();
+    }
+
+    public function observaciones()
+    {
+        return $this->hasMany(Observacion::class)->oldest();
     }
 }

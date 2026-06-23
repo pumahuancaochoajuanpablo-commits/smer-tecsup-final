@@ -9,6 +9,7 @@ use App\Models\Entrevista;
 use App\Models\Estudiante;
 use App\Models\Observacion;
 use App\Services\EntrevistaService;
+use App\Services\ReporteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -68,6 +69,7 @@ class TutorController extends Controller
                 'fecha' => $entrevista->fecha,
                 'puntaje_total' => $entrevista->puntaje_total,
                 'nivel_riesgo' => $entrevista->nivel_riesgo,
+                'estudiante_id' => $entrevista->asignacion->estudiante->id,
             ]);
 
         return view('tutor.dashboard', compact(
@@ -153,7 +155,7 @@ class TutorController extends Controller
             ->where('estudiante_id', $estudiante->id)
             ->firstOrFail();
 
-        $entrevistas = Entrevista::with('observacion')
+        $entrevistas = Entrevista::with('observaciones')
             ->where('asignacion_id', $asignacion->id)
             ->orderBy('fecha', 'desc')
             ->get();
@@ -165,7 +167,7 @@ class TutorController extends Controller
     {
         $tutor = Auth::user()->tutor;
 
-        $estudiantes = Asignacion::with(['estudiante.user', 'entrevistas'])
+        $estudiantes = Asignacion::with(['estudiante.user', 'entrevistas.observaciones'])
             ->where('tutor_id', $tutor->id)
             ->get()
             ->map(function ($asignacion) {
@@ -180,6 +182,12 @@ class TutorController extends Controller
                     'nombre' => $asignacion->estudiante->user->name,
                     'carrera' => $asignacion->estudiante->carrera . ' - ' . $asignacion->estudiante->ciclo,
                     'nivel_riesgo' => $ultimaEntrevista->nivel_riesgo,
+                    'observaciones' => $ultimaEntrevista->observaciones
+                        ->map(fn (Observacion $observacion) => [
+                            'texto' => $observacion->texto,
+                            'fecha' => $observacion->created_at?->format('d/m/Y H:i'),
+                        ])
+                        ->values(),
                 ];
             })
             ->filter()
@@ -200,17 +208,28 @@ class TutorController extends Controller
 
         abort_if($entrevista->asignacion->tutor_id !== $tutor->id, 403, 'No tienes permiso sobre este estudiante.');
 
-        Observacion::updateOrCreate(
-            ['entrevista_id' => $entrevista->id],
-            ['texto' => $request->observacion]
-        );
+        Observacion::create([
+            'entrevista_id' => $entrevista->id,
+            'texto' => $request->observacion,
+        ]);
 
         AuditLog::registrar('create', 'Observacion', $entrevista->id, [
             'estudiante' => $entrevista->asignacion->estudiante->codigo,
         ]);
 
         return redirect()->route('tutor.observaciones')
-            ->with('success', 'Observacion registrada correctamente.');
+            ->with('success', 'Observacion agregada correctamente.');
+    }
+
+    public function reporteEstudiante(Estudiante $estudiante)
+    {
+        $tutor = Auth::user()->tutor;
+
+        Asignacion::where('tutor_id', $tutor->id)
+            ->where('estudiante_id', $estudiante->id)
+            ->firstOrFail();
+
+        return app(ReporteService::class)->fichaIndividualPDF($estudiante);
     }
 
     public function alertas()

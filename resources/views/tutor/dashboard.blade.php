@@ -47,6 +47,7 @@
                         <th>Fecha</th>
                         <th>Puntaje</th>
                         <th>Nivel</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,12 +60,19 @@
                             default => 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600',
                         };
                     @endphp
-                    <tr>
+                    <tr class="hover:bg-cyan-50 transition-colors">
                         <td class="font-medium text-tecsup-dark">{{ $e->nombre }}</td>
                         <td class="text-gray-500">{{ $e->carrera }}</td>
                         <td class="text-gray-500">{{ \Carbon\Carbon::parse($e->fecha)->format('d/m/Y') }}</td>
                         <td class="text-gray-500">{{ $e->puntaje_total }}</td>
                         <td><span class="{{ $badgeClass }}">{{ strtoupper($e->nivel_riesgo) }}</span></td>
+                        <td>
+                            <a href="{{ route('tutor.reportes.ficha', $e->estudiante_id) }}"
+                               class="btn-tecsup-outline text-xs py-1 px-3"
+                               target="_blank">
+                                Ver reporte
+                            </a>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

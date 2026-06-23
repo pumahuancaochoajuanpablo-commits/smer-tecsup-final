@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->grou
     Route::get('/observaciones', [TutorController::class, 'observaciones'])->name('observaciones');
     Route::post('/observaciones/guardar', [TutorController::class, 'guardarObservacion'])->name('observaciones.guardar');
     Route::get('/alertas', [TutorController::class, 'alertas'])->name('alertas');
+    Route::get('/reportes/ficha/{estudiante}', [TutorController::class, 'reporteEstudiante'])->name('reportes.ficha');
     
     // CUS06: Derivaciones
     Route::get('/derivaciones', [DerivacionController::class, 'index'])->name('derivaciones');
