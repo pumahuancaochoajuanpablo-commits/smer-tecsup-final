@@ -28,10 +28,16 @@ services:
       - key: QUEUE_CONNECTION
         value: database
       - key: DB_CONNECTION
-        value: mysql
-      - key: DB_URL
-        sync: false
+        value: pgsql
+      - key: DB_SSLMODE
+        value: require
       - key: RUN_SEEDERS
         value: true
-      - key: BREVO_API_KEY
-        sync: false
+      - key: DB_URL
+        fromDatabase:
+          name: smer-tecsup-db
+          property: connectionString
+
+databases:
+  - name: smer-tecsup-db
+    plan: free

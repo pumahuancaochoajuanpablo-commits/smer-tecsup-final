@@ -21,6 +21,7 @@ RUN apt-get update \
         libpng-dev \
         libjpeg-dev \
         libfreetype6-dev \
+        libpq-dev \
         libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
@@ -29,6 +30,7 @@ RUN apt-get update \
         intl \
         opcache \
         pdo_mysql \
+        pdo_pgsql \
         zip \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
