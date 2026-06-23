@@ -56,7 +56,7 @@
             <nav class="flex-1 py-3 overflow-y-auto">
                 @if($rolNombre === 'tutor')
                     <x-sidebar-link href="{{ route('tutor.dashboard') }}" :active="request()->routeIs('tutor.dashboard')" icon="dashboard">
-                        Dashboard
+                        Panel
                     </x-sidebar-link>
                     <x-sidebar-link href="{{ route('tutor.estudiantes') }}" :active="request()->routeIs('tutor.estudiantes')" icon="students">
                         Mis alumnos
@@ -69,7 +69,7 @@
                     </x-sidebar-link>
                 @elseif($rolNombre === 'admin')
                     <x-sidebar-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')" icon="dashboard">
-                        Dashboard
+                        Panel
                     </x-sidebar-link>
                     <x-sidebar-link href="{{ route('admin.tutores') }}" :active="request()->routeIs('admin.tutores')" icon="students">
                         Tutores

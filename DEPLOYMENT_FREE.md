@@ -47,6 +47,25 @@ QUEUE_CONNECTION=database
 RUN_SEEDERS=true
 ```
 
+## Recuperacion real de contrasena por correo
+
+Laravel ya incluye la pantalla `Olvide mi contrasena`, pero solo enviara correos reales si configuras un proveedor SMTP en Render. Si dejas `MAIL_MAILER=log`, el enlace se genera pero queda en los logs del servidor.
+
+Variables necesarias:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.tu-proveedor.com
+MAIL_PORT=587
+MAIL_USERNAME=usuario-smtp
+MAIL_PASSWORD=password-smtp
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=no-reply@tu-dominio.com
+MAIL_FROM_NAME="SMER Tecsup"
+```
+
+Para una demo puedes usar un SMTP gratuito o de prueba. Para produccion real, usa un correo institucional o un proveedor transaccional.
+
 ## Base de datos gratis externa
 
 Tambien puedes crear la base en Neon o Supabase y pegar la cadena de conexion en `DB_URL`. Para este proyecto, PostgreSQL es suficiente y Laravel ya tiene soporte para `pgsql`.

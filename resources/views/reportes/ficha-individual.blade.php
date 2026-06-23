@@ -44,7 +44,7 @@
                 <td>{{ $estudiante->ciclo ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <th>Email</th>
+                <th>Correo</th>
                 <td colspan="3">{{ $estudiante->user->email }}</td>
             </tr>
         </table>

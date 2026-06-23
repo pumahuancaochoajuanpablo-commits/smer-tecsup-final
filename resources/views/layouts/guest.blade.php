@@ -17,7 +17,6 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center py-8 px-4"
              style="background: linear-gradient(135deg, #0C2333 0%, #0e3050 60%, #0CB9D7 100%);">
 
-            {{-- Header flotante con título del sistema --}}
             <div class="mb-6 w-full sm:max-w-md">
                 <div class="bg-white rounded-full px-6 py-3 shadow-lg text-center">
                     <span class="text-tecsup-cyan font-bold text-lg tracking-wide">
@@ -26,23 +25,18 @@
                 </div>
             </div>
 
-            {{-- Card del formulario --}}
             <div class="w-full sm:max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-
-                {{-- Header oscuro con logo Tecsup + título dinámico según la pantalla --}}
                 <div class="bg-tecsup-dark px-8 py-5 flex items-center gap-4">
-                    <img src="{{ asset('logo-tecsup.png') }}"
-                         alt="Tecsup"
-                         class="h-8 w-auto object-contain shrink-0">
+                    <img src="{{ asset('logo-tecsup.png') }}" alt="Tecsup" class="h-8 w-auto object-contain shrink-0">
 
                     @php
                         $tituloAuth = match(true) {
-                            request()->routeIs('register')              => 'Crear Cuenta',
-                            request()->routeIs('password.request')      => 'Recuperar Contraseña',
-                            request()->routeIs('password.reset')        => 'Restablecer Contraseña',
-                            request()->routeIs('password.confirm')      => 'Confirmar Contraseña',
-                            request()->routeIs('verification.notice')   => 'Verificar Correo',
-                            default                                     => 'Iniciar Sesión',
+                            request()->routeIs('register') => 'Crear cuenta',
+                            request()->routeIs('password.request') => 'Recuperar contrasena',
+                            request()->routeIs('password.reset') => 'Restablecer contrasena',
+                            request()->routeIs('password.confirm') => 'Confirmar contrasena',
+                            request()->routeIs('verification.notice') => 'Verificar correo',
+                            default => 'Iniciar sesion',
                         };
                     @endphp
 
@@ -56,8 +50,8 @@
                 </div>
             </div>
 
-            <p class="mt-6 text-white/40 text-xs text-center">
-                &copy; {{ date('Y') }} Tecsup — Todos los derechos reservados
+            <p class="mt-6 text-white/50 text-xs text-center">
+                &copy; {{ date('Y') }} Tecsup - Todos los derechos reservados
             </p>
         </div>
     </body>

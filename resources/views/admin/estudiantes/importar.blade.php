@@ -27,10 +27,19 @@
                 El archivo debe tener encabezados. Un archivo TXT solo funciona si internamente esta separado por comas como un CSV.
             </p>
 
+            <div class="flex flex-col sm:flex-row gap-3 mb-5">
+                <a href="{{ route('admin.plantilla.csv') }}" class="btn-tecsup-outline justify-center">
+                    Descargar CSV listo para subir
+                </a>
+                <a href="{{ route('admin.plantilla.excel') }}" class="btn-tecsup-outline justify-center">
+                    Descargar Excel editable
+                </a>
+            </div>
+
             <form method="POST" action="{{ route('admin.importar.csv') }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="tecsup-label">Archivo</label>
+                    <label class="tecsup-label">Archivo CSV</label>
                     <input type="file" name="archivo" accept=".csv,.txt,text/csv,text/plain" class="tecsup-input" required>
                 </div>
 

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard Administrativo') }}
+            Panel Administrativo
         </h2>
     </x-slot>
 
@@ -36,7 +36,7 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Distribución por Nivel de Riesgo</h3>
+                    <h3 class="text-lg font-semibold mb-4">Distribucion por Nivel de Riesgo</h3>
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="bg-green-100 p-4 rounded">
                             <div class="text-2xl font-bold text-green-700">{{ $riesgos['bajo'] ?? 0 }}</div>

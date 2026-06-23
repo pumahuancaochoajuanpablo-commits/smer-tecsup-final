@@ -29,6 +29,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/tutores', [AdminController::class, 'guardarTutor'])->name('tutores.guardar');
     Route::get('/estudiantes/importar', [AdminController::class, 'importarForm'])->name('importar');
     Route::post('/estudiantes/importar', [AdminController::class, 'importarCSV'])->name('importar.csv');
+    Route::get('/estudiantes/plantilla/csv', [AdminController::class, 'descargarPlantillaCSV'])->name('plantilla.csv');
+    Route::get('/estudiantes/plantilla/excel', [AdminController::class, 'descargarPlantillaExcel'])->name('plantilla.excel');
     Route::get('/asignaciones', [AdminController::class, 'asignacionesForm'])->name('asignaciones');
     Route::post('/asignaciones', [AdminController::class, 'asignarTutoria'])->name('asignaciones.guardar');
     Route::get('/encuestas', [AdminController::class, 'encuestas'])->name('encuestas.index');

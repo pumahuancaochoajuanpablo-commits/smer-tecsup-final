@@ -79,6 +79,16 @@ class AdminController extends Controller
         return view('admin.estudiantes.importar');
     }
 
+    public function descargarPlantillaCSV()
+    {
+        return response()->download(base_path('plantillas/plantilla_importar_estudiantes.csv'));
+    }
+
+    public function descargarPlantillaExcel()
+    {
+        return response()->download(base_path('plantillas/plantilla_importar_estudiantes.xlsx'));
+    }
+
     public function importarCSV(Request $request)
     {
         $request->validate([
