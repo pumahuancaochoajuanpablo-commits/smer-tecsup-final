@@ -3,22 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
+use App\Models\Asignacion;
 use App\Models\Derivacion;
 use App\Models\Estudiante;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\BrevoEmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class DerivacionController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('role:tutor,admin');
-    }
-
     public function index()
     {
         $derivaciones = Derivacion::with(['estudiante.user', 'tutor.user'])
@@ -30,14 +27,25 @@ class DerivacionController extends Controller
 
     public function crear($estudianteId)
     {
-        $estudiante = Estudiante::with('user')->findOrFail($estudianteId);
-        $tutor = Auth::user()->tutor;
+        try {
+            $estudiante = Estudiante::with('user')->findOrFail($estudianteId);
+            $tutor = Auth::user()->tutor;
 
-        if (! $tutor) {
-            return redirect()->back()->with('error', 'No tienes permisos para derivar estudiantes.');
+            if (! $tutor) {
+                return redirect()->back()->with('error', 'No tienes permisos para derivar estudiantes.');
+            }
+
+            return view('derivaciones.crear', compact('estudiante', 'tutor'));
+        } catch (\Throwable $exception) {
+            Log::error('No se pudo abrir el formulario de derivacion.', [
+                'estudiante_id' => $estudianteId,
+                'user_id' => Auth::id(),
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->route('tutor.alertas')
+                ->with('error', 'No se pudo abrir la derivacion. Verifica que el estudiante exista y este asignado al tutor.');
         }
-
-        return view('derivaciones.crear', compact('estudiante', 'tutor'));
     }
 
     public function registrar(Request $request)
@@ -56,6 +64,26 @@ class DerivacionController extends Controller
                 return redirect()->back()->with('error', 'No tienes permisos para registrar derivaciones.');
             }
 
+            $tieneAsignacion = Asignacion::where('tutor_id', $tutor->id)
+                ->where('estudiante_id', $validated['estudiante_id'])
+                ->exists();
+
+            if (! $tieneAsignacion) {
+                return redirect()->back()
+                    ->with('error', 'No puedes derivar a un estudiante que no tienes asignado.');
+            }
+
+            $derivacionExistente = Derivacion::where('estudiante_id', $validated['estudiante_id'])
+                ->where('tutor_id', $tutor->id)
+                ->whereIn('estado', ['pendiente', 'derivado'])
+                ->latest('fecha_derivacion')
+                ->first();
+
+            if ($derivacionExistente) {
+                return redirect()->route('tutor.alertas')
+                    ->with('success', 'Este estudiante ya tiene una derivacion activa. Puedes revisar el seguimiento en Alertas.');
+            }
+
             $derivacion = Derivacion::create([
                 'estudiante_id' => $validated['estudiante_id'],
                 'tutor_id' => $tutor->id,
@@ -66,19 +94,29 @@ class DerivacionController extends Controller
                 'observaciones' => [],
             ]);
 
-            $this->notificarAdmin($derivacion);
+            $correoEnviado = $this->notificarAdmin($derivacion);
 
             AuditLog::registrar('create', 'Derivacion', $derivacion->id, [
                 'estudiante_id' => $derivacion->estudiante_id,
                 'motivo' => $derivacion->motivo,
             ]);
 
-            return redirect()->route('derivaciones.index')
-                ->with('success', 'Derivacion registrada correctamente. Se aviso al administrador de Bienestar.');
+            $mensaje = $correoEnviado
+                ? 'Derivacion registrada correctamente. Se aviso al administrador de Bienestar.'
+                : 'Derivacion registrada correctamente, pero no se pudo enviar el correo al administrador. Revisa BREVO_API_KEY y el remitente verificado.';
+
+            return redirect()->route('tutor.alertas')
+                ->with($correoEnviado ? 'success' : 'error', $mensaje);
         } catch (\Throwable $exception) {
+            Log::error('No se pudo registrar la derivacion.', [
+                'user_id' => Auth::id(),
+                'payload' => $request->except(['_token']),
+                'error' => $exception->getMessage(),
+            ]);
+
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Error al registrar derivacion: '.$exception->getMessage());
+                ->with('error', 'No se pudo registrar la derivacion. Motivo tecnico: '.$exception->getMessage());
         }
     }
 
@@ -155,16 +193,9 @@ class DerivacionController extends Controller
         return view('derivaciones.estadisticas', compact('stats'));
     }
 
-    private function notificarAdmin(Derivacion $derivacion): void
+    private function notificarAdmin(Derivacion $derivacion): bool
     {
-        $admin = User::where('email', 'yeferson.quispe@tecsup.edu.pe')->first();
-
-        if (! $admin) {
-            Log::warning('No se encontro el administrador de Bienestar para notificar derivacion.', [
-                'derivacion_id' => $derivacion->id,
-            ]);
-            return;
-        }
+        $admin = $this->adminBienestar();
 
         $derivacion->loadMissing(['estudiante.user', 'tutor.user']);
 
@@ -182,12 +213,31 @@ class DerivacionController extends Controller
                 ])->render(),
                 "Nueva derivacion: {$derivacion->estudiante->user->name}. Motivo: {$derivacion->motivo}. Se recomienda derivacion a psicologia o bienestar estudiantil."
             );
+
+            return true;
         } catch (\Throwable $exception) {
             Log::error('No se pudo notificar al administrador sobre la derivacion.', [
                 'derivacion_id' => $derivacion->id,
                 'admin_email' => $admin->email,
                 'error' => $exception->getMessage(),
             ]);
+
+            return false;
         }
+    }
+
+    private function adminBienestar(): User
+    {
+        $adminRole = Role::firstOrCreate(['nombre' => 'admin']);
+
+        return User::updateOrCreate(
+            ['email' => 'yeferson.quispe@tecsup.edu.pe'],
+            [
+                'name' => 'Yeferson Quispe',
+                'password' => Hash::make('admin123'),
+                'rol_id' => $adminRole->id,
+                'estado' => true,
+            ]
+        );
     }
 }

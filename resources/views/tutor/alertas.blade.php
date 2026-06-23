@@ -58,11 +58,19 @@
                                 <td class="text-gray-500">{{ $est->carrera }}</td>
                                 <td class="text-gray-500">{{ \Carbon\Carbon::parse($est->fecha)->format('d/m/Y') }}</td>
                                 <td class="text-gray-500">{{ $est->puntaje_total }}</td>
-                                <td>
-                                    <a href="{{ route('derivaciones.crear', $est->estudiante_id) }}"
-                                       class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors">
-                                        Derivar
-                                    </a>
+                                <td class="text-right">
+                                    <form method="POST" action="{{ route('derivaciones.registrar') }}" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="estudiante_id" value="{{ $est->estudiante_id }}">
+                                        <input type="hidden" name="motivo" value="Riesgo alto">
+                                        <input type="hidden" name="descripcion" value="El estudiante {{ $est->nombre }} registra nivel de riesgo alto con puntaje {{ $est->puntaje_total }} en la ultima encuesta. Se recomienda derivacion prioritaria a psicologia o Bienestar Estudiantil.">
+                                        <input type="hidden" name="responsable_bienestar" value="Yeferson Quispe">
+                                        <button type="submit"
+                                            class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors"
+                                            onclick="return confirm('Se registrara la derivacion y se intentara avisar por correo a Bienestar. ¿Continuar?')">
+                                            Derivar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach
