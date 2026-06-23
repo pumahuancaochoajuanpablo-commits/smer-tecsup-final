@@ -8,6 +8,7 @@ use App\Models\Estudiante;
 use App\Models\ParametroRiesgo;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Services\EntrevistaService;
 use App\Services\ReporteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +25,6 @@ class AdminController extends Controller
             ->groupBy('nivel_riesgo')
             ->pluck('total', 'nivel_riesgo');
 
-        // Últimas 5 entrevistas
         $ultimasEntrevistas = Entrevista::with(['asignacion.estudiante.user', 'asignacion.tutor.user'])
             ->orderBy('created_at', 'desc')
             ->take(5)
@@ -42,6 +42,7 @@ class AdminController extends Controller
     public function tutores()
     {
         $tutores = Tutor::with('user')->get();
+
         return view('admin.tutores.index', compact('tutores'));
     }
 
@@ -80,11 +81,8 @@ class AdminController extends Controller
     {
         $request->validate(['archivo' => 'required|file|mimes:csv,txt']);
 
-        $file = $request->file('archivo');
-        $path = $file->getRealPath();
-        $handle = fopen($path, 'r');
+        $handle = fopen($request->file('archivo')->getRealPath(), 'r');
         $headers = fgetcsv($handle, 0, ',');
-
         $importados = 0;
         $errores = [];
 
@@ -92,8 +90,10 @@ class AdminController extends Controller
             $data = array_combine($headers, $row);
 
             try {
+                $nombre = $data['nombre'] ?? trim(($data['apellidos'] ?? '') . ' ' . ($data['nombres'] ?? ''));
+
                 $user = User::create([
-                    'name' => $data['nombre'],
+                    'name' => $nombre,
                     'email' => $data['email'],
                     'password' => Hash::make('estudiante123'),
                     'rol_id' => 3,
@@ -102,14 +102,17 @@ class AdminController extends Controller
 
                 Estudiante::create([
                     'user_id' => $user->id,
-                    'codigo' => $data['codigo'],
-                    'carrera' => $data['carrera'],
+                    'codigo' => $data['codigo'] ?? 'EST' . str_pad((string) ($user->id), 4, '0', STR_PAD_LEFT),
+                    'carrera' => $data['carrera'] ?? $data['especialidad'] ?? 'No especificada',
+                    'ciclo' => $data['ciclo'] ?? $data['semestre'] ?? null,
+                    'grupo' => $data['grupo'] ?? null,
+                    'edad' => $data['edad'] ?? null,
                     'estado' => true,
                 ]);
 
                 $importados++;
-            } catch (\Exception $e) {
-                $errores[] = "Fila " . ($importados + 2) . ": " . $e->getMessage();
+            } catch (\Throwable $exception) {
+                $errores[] = 'Fila ' . ($importados + 2) . ': ' . $exception->getMessage();
             }
         }
 
@@ -120,11 +123,25 @@ class AdminController extends Controller
             ->with('errores', $errores);
     }
 
+    public function asignacionesForm()
+    {
+        $tutores = Tutor::with('user')->get();
+        $estudiantes = Estudiante::with('user')
+            ->whereDoesntHave('asignaciones')
+            ->orderBy('codigo')
+            ->get();
+        $asignaciones = Asignacion::with(['tutor.user', 'estudiante.user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.asignaciones.index', compact('tutores', 'estudiantes', 'asignaciones'));
+    }
+
     public function asignarTutoria(Request $request)
     {
         $request->validate([
             'tutor_id' => 'required|exists:tutores,id',
-            'estudiantes' => 'required|array',
+            'estudiantes' => 'required|array|min:1',
             'estudiantes.*' => 'exists:estudiantes,id',
         ]);
 
@@ -137,71 +154,103 @@ class AdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.asignaciones')->with('success', 'Tutorías asignadas correctamente.');
+        return redirect()->route('admin.asignaciones')->with('success', 'Tutorias asignadas correctamente.');
     }
 
-    public function asignacionesForm()
+    public function encuestas()
     {
-        $tutores = Tutor::with('user')->get();
-        $estudiantes = Estudiante::with('user')
-            ->whereDoesntHave('asignaciones')
+        $asignaciones = Asignacion::with(['tutor.user', 'estudiante.user', 'entrevistas'])
+            ->orderBy('created_at', 'desc')
             ->get();
-        $asignaciones = Asignacion::with(['tutor.user', 'estudiante.user'])->get();
 
-        return view('admin.asignaciones.index', compact('tutores', 'estudiantes', 'asignaciones'));
+        return view('admin.encuestas.index', compact('asignaciones'));
+    }
+
+    public function nuevaEncuesta(Asignacion $asignacion)
+    {
+        $asignacion->load(['estudiante.user', 'tutor.user']);
+        $estudiante = $asignacion->estudiante;
+        $formAction = route('admin.encuestas.guardar');
+
+        return view('tutor.entrevista.create', compact('asignacion', 'estudiante', 'formAction'));
+    }
+
+    public function guardarEncuesta(Request $request)
+    {
+        $data = $request->validate([
+            'asignacion_id' => 'required|exists:asignaciones,id',
+            'fecha' => 'required|date',
+            'carrera' => 'nullable|string|max:100',
+            'ciclo' => 'nullable|string|max:20',
+            'grupo' => 'nullable|string|max:20',
+            'edad' => 'nullable|integer|min:10|max:80',
+            'acad_2' => 'required|integer|min:1|max:3',
+            'emoc_2' => 'required|integer|min:1|max:3',
+            'soc_2' => 'required|integer|min:1|max:3',
+            'econ_2' => 'required|integer|min:1|max:3',
+            'fam_2' => 'required|integer|min:1|max:3',
+            'salud_2' => 'required|integer|min:1|max:3',
+            'documento' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'observacion' => 'nullable|string',
+        ]);
+
+        $resultado = app(EntrevistaService::class)->registrar($data, $request->file('documento'));
+
+        return redirect()->route('admin.encuestas.index')
+            ->with('success', 'Encuesta registrada. Puntaje: ' . $resultado['puntaje'] . '. Nivel de riesgo: ' . strtoupper($resultado['nivel']))
+            ->with('recomendacion', $resultado['recomendacion']);
     }
 
     public function configuracion()
     {
         $parametros = ParametroRiesgo::all()->keyBy('indicador');
+
         return view('admin.configuracion.index', compact('parametros'));
     }
 
     public function guardarConfig(Request $request)
     {
         $request->validate([
-            'peso.*' => 'required|numeric|min:0|max:100',
-            'umbral_bajo.*' => 'required|integer|min:1',
-            'umbral_medio.*' => 'required|integer|min:1',
-            'umbral_alto.*' => 'required|integer|min:1',
+            'umbral_bajo_global' => 'required|integer|min:1|max:18',
+            'umbral_medio_global' => 'required|integer|min:1|max:18',
+            'umbral_alto_global' => 'required|integer|min:1|max:18',
         ]);
 
+        if ($request->umbral_bajo_global >= $request->umbral_medio_global || $request->umbral_medio_global >= $request->umbral_alto_global) {
+            return back()
+                ->withInput()
+                ->withErrors(['umbrales' => 'Los umbrales deben mantener este orden: bajo menor que medio, y medio menor que alto.']);
+        }
+
         foreach (['acad_2', 'emoc_2', 'soc_2', 'econ_2', 'fam_2', 'salud_2'] as $indicador) {
-            ParametroRiesgo::where('indicador', $indicador)->update([
-                'peso' => $request->peso[$indicador],
-                'umbral_bajo' => $request->umbral_bajo[$indicador],
-                'umbral_medio' => $request->umbral_medio[$indicador],
-                'umbral_alto' => $request->umbral_alto[$indicador],
+            ParametroRiesgo::updateOrCreate(['indicador' => $indicador], [
+                'peso' => 1,
+                'umbral_bajo' => $request->umbral_bajo_global,
+                'umbral_medio' => $request->umbral_medio_global,
+                'umbral_alto' => $request->umbral_alto_global,
             ]);
         }
 
-        return redirect()->route('admin.config')->with('success', 'Configuración actualizada.');
+        return redirect()->route('admin.config')->with('success', 'Configuracion actualizada.');
     }
 
-    /**
-     * CUS08: Generar ficha individual en PDF
-     */
     public function fichaIndividualPDF(Estudiante $estudiante)
     {
-        $reporteService = new ReporteService();
-        return $reporteService->fichaIndividualPDF($estudiante);
+        return app(ReporteService::class)->fichaIndividualPDF($estudiante);
     }
 
-    /**
-     * CUS08: Generar informe general en PDF
-     */
     public function informeGeneralPDF()
     {
-        $reporteService = new ReporteService();
-        return $reporteService->informeGeneralPDF();
+        return app(ReporteService::class)->informeGeneralPDF();
     }
 
-    /**
-     * CUS08: Exportar entrevistas a Excel
-     */
     public function exportarExcel()
     {
-        $reporteService = new ReporteService();
-        return $reporteService->exportarEntrevistasExcel();
+        return app(ReporteService::class)->exportarEntrevistasExcel();
+    }
+
+    public function exportarFichasMasivas()
+    {
+        return app(ReporteService::class)->exportarFichasMasivasZip();
     }
 }

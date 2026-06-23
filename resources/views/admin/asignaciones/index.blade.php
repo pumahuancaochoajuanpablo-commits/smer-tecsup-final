@@ -1,70 +1,96 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Asignar Tutorías') }}
-        </h2>
-    </x-slot>
+    <x-slot name="header">Asignar Tutorias</x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
-            @endif
+    @if(session('success'))
+        <div class="tecsup-alert-success mb-4">{{ session('success') }}</div>
+    @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Nueva Asignación</h3>
-                    <form method="POST" action="{{ route('admin.asignaciones.guardar') }}">
-                        @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Tutor</label>
-                                <select name="tutor_id" class="w-full border-gray-300 rounded-md shadow-sm" required>
-                                    <option value="">Seleccionar tutor</option>
-                                    @foreach($tutores as $tutor)
-                                    <option value="{{ $tutor->id }}">{{ $tutor->user->name }} ({{ $tutor->codigo }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Estudiantes (Ctrl+click para múltiples)</label>
-                                <select name="estudiantes[]" multiple class="w-full border-gray-300 rounded-md shadow-sm h-40" required>
-                                    @foreach($estudiantes as $est)
-                                    <option value="{{ $est->id }}">{{ $est->user->name }} ({{ $est->codigo }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Asignar</button>
-                    </form>
+    @if($errors->any())
+        <div class="tecsup-alert-danger mb-4">{{ $errors->first() }}</div>
+    @endif
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 lg:col-span-1">
+            <h3 class="text-lg font-semibold mb-4">Nueva Asignacion</h3>
+            <form method="POST" action="{{ route('admin.asignaciones.guardar') }}" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label class="tecsup-label">Tutora</label>
+                    <select name="tutor_id" class="tecsup-input" required>
+                        <option value="">Seleccionar tutora</option>
+                        @foreach($tutores as $tutor)
+                            <option value="{{ $tutor->id }}">{{ $tutor->user->name }} ({{ $tutor->codigo }})</option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Asignaciones Actuales</h3>
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="py-2">Tutor</th>
-                                <th class="py-2">Estudiante</th>
-                                <th class="py-2">Fecha Inicio</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($asignaciones as $a)
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="py-2">{{ $a->tutor->user->name }}</td>
-                                <td class="py-2">{{ $a->estudiante->user->name }}</td>
-                                <td class="py-2">{{ $a->fecha_inicio }}</td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="3" class="py-4 text-center text-gray-500">Sin asignaciones</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div>
+                    <div class="flex items-center justify-between gap-3 mb-2">
+                        <label class="tecsup-label mb-0">Estudiantes</label>
+                        <span class="text-xs text-gray-500">Marca uno o varios</span>
+                    </div>
+                    <input type="text" id="buscar-estudiante" class="tecsup-input mb-3" placeholder="Buscar estudiante o codigo">
+
+                    <div class="border border-gray-200 rounded-lg divide-y max-h-80 overflow-y-auto" id="lista-estudiantes">
+                        @forelse($estudiantes as $estudiante)
+                            <label class="estudiante-opcion flex items-start gap-3 p-3 hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" name="estudiantes[]" value="{{ $estudiante->id }}" class="mt-1 rounded border-gray-300 text-tecsup-cyan">
+                                <span>
+                                    <span class="block text-sm font-semibold text-tecsup-dark estudiante-texto">{{ $estudiante->user->name }} {{ $estudiante->codigo }}</span>
+                                    <span class="block text-xs text-gray-500">{{ $estudiante->codigo }} - {{ $estudiante->carrera }} {{ $estudiante->ciclo ? ' / Semestre ' . $estudiante->ciclo : '' }}</span>
+                                </span>
+                            </label>
+                        @empty
+                            <p class="p-4 text-sm text-gray-500">No quedan estudiantes sin asignar.</p>
+                        @endforelse
+                    </div>
                 </div>
+
+                <button type="submit" class="btn-tecsup-primary w-full justify-center">Asignar Tutoria</button>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 lg:col-span-2">
+            <h3 class="text-lg font-semibold mb-4">Asignaciones Actuales</h3>
+            <div class="overflow-x-auto">
+                <table class="tecsup-table">
+                    <thead>
+                        <tr>
+                            <th>Tutora</th>
+                            <th>Estudiante</th>
+                            <th>Carrera / Semestre / Grupo</th>
+                            <th>Fecha Inicio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($asignaciones as $asignacion)
+                            <tr>
+                                <td>{{ $asignacion->tutor->user->name }}</td>
+                                <td>{{ $asignacion->estudiante->user->name }}</td>
+                                <td>{{ $asignacion->estudiante->carrera }} / {{ $asignacion->estudiante->ciclo ?? 'N/A' }} / {{ $asignacion->estudiante->grupo ?? 'N/A' }}</td>
+                                <td>{{ $asignacion->fecha_inicio->format('d/m/Y') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-gray-500 py-8">Sin asignaciones</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.getElementById('buscar-estudiante')?.addEventListener('input', function () {
+                const filtro = this.value.toLowerCase();
+                document.querySelectorAll('.estudiante-opcion').forEach((opcion) => {
+                    const texto = opcion.querySelector('.estudiante-texto').textContent.toLowerCase();
+                    opcion.style.display = texto.includes(filtro) ? 'flex' : 'none';
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>

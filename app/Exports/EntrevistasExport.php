@@ -3,33 +3,37 @@
 namespace App\Exports;
 
 use App\Models\Entrevista;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class EntrevistasExport implements FromCollection, WithHeadings, WithStyles
+class EntrevistasExport implements FromQuery, WithHeadings, WithMapping, WithStyles
 {
-    public function collection()
+    public function query()
     {
         return Entrevista::with(['asignacion.estudiante.user', 'asignacion.tutor.user'])
-            ->get()
-            ->map(function ($entrevista) {
-                return [
-                    'Fecha' => $entrevista->fecha->format('d/m/Y'),
-                    'Estudiante' => $entrevista->asignacion->estudiante->user->name ?? 'N/A',
-                    'Código' => $entrevista->asignacion->estudiante->codigo ?? 'N/A',
-                    'Tutor' => $entrevista->asignacion->tutor->user->name ?? 'N/A',
-                    'Académico' => $entrevista->acad_2,
-                    'Emocional' => $entrevista->emoc_2,
-                    'Social' => $entrevista->soc_2,
-                    'Económico' => $entrevista->econ_2,
-                    'Familiar' => $entrevista->fam_2,
-                    'Salud' => $entrevista->salud_2,
-                    'Puntaje Total' => $entrevista->puntaje_total,
-                    'Nivel de Riesgo' => strtoupper($entrevista->nivel_riesgo),
-                ];
-            });
+            ->orderBy('fecha', 'desc')
+            ->orderBy('id', 'desc');
+    }
+
+    public function map($entrevista): array
+    {
+        return [
+            $entrevista->fecha?->format('d/m/Y') ?? 'N/A',
+            $entrevista->asignacion?->estudiante?->user?->name ?? 'N/A',
+            $entrevista->asignacion?->estudiante?->codigo ?? 'N/A',
+            $entrevista->asignacion?->tutor?->user?->name ?? 'N/A',
+            $entrevista->acad_2,
+            $entrevista->emoc_2,
+            $entrevista->soc_2,
+            $entrevista->econ_2,
+            $entrevista->fam_2,
+            $entrevista->salud_2,
+            $entrevista->puntaje_total,
+            strtoupper((string) $entrevista->nivel_riesgo),
+        ];
     }
 
     public function headings(): array
@@ -37,12 +41,12 @@ class EntrevistasExport implements FromCollection, WithHeadings, WithStyles
         return [
             'Fecha',
             'Estudiante',
-            'Código',
+            'Codigo',
             'Tutor',
-            'Académico',
+            'Academico',
             'Emocional',
             'Social',
-            'Económico',
+            'Economico',
             'Familiar',
             'Salud',
             'Puntaje Total',

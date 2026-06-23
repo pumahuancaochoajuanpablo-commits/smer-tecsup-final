@@ -1,22 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="py-12">
+<div class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100">
             <div class="p-6 text-gray-900">
-                <div class="mb-6 flex justify-between items-center">
-                    <h2 class="text-2xl font-bold">📋 AUDITORÍA DEL SISTEMA</h2>
-                    <a href="{{ route('admin.auditoria.excel') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                        📊 Exportar a Excel
+                <div class="mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                    <h2 class="text-2xl font-bold">Auditoria del Sistema</h2>
+                    <a href="{{ route('admin.auditoria.excel', request()->query()) }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-semibold">
+                        Exportar a Excel
                     </a>
                 </div>
 
-                <!-- Filtros -->
-                <form method="GET" action="{{ route('admin.auditoria.index') }}" class="mb-6 p-4 bg-gray-50 rounded">
+                <form method="GET" action="{{ route('admin.auditoria.index') }}" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div>
-                            <label class="block text-sm font-medium">Acción</label>
+                            <label class="block text-sm font-medium">Accion</label>
                             <select name="accion" class="mt-1 block w-full border-gray-300 rounded">
                                 <option value="">Todas</option>
                                 @foreach($acciones as $accion)
@@ -50,21 +49,20 @@
                         </div>
 
                         <div class="flex items-end">
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                🔍 Filtrar
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold">
+                                Filtrar
                             </button>
                         </div>
                     </div>
                 </form>
 
-                <!-- Tabla de logs -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="bg-gray-100 border-b">
                             <tr>
                                 <th class="px-4 py-2 text-left">Fecha</th>
                                 <th class="px-4 py-2 text-left">Usuario</th>
-                                <th class="px-4 py-2 text-left">Acción</th>
+                                <th class="px-4 py-2 text-left">Accion</th>
                                 <th class="px-4 py-2 text-left">Modelo</th>
                                 <th class="px-4 py-2 text-left">IP</th>
                                 <th class="px-4 py-2 text-left">Acciones</th>
@@ -96,7 +94,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="px-4 py-4 text-center text-gray-500">
-                                        No hay registros de auditoría
+                                        No hay registros de auditoria
                                     </td>
                                 </tr>
                             @endforelse
@@ -104,7 +102,6 @@
                     </table>
                 </div>
 
-                <!-- Paginación -->
                 <div class="mt-4">
                     {{ $logs->links() }}
                 </div>

@@ -1,76 +1,53 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            📊 {{ __('Dashboard Administrativo') }}
+            {{ __('Dashboard Administrativo') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-4">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <!-- Tarjetas de Estadísticas -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm opacity-90">Total Estudiantes</p>
-                            <p class="text-4xl font-bold">{{ $totalEstudiantes }}</p>
-                        </div>
-                        <div class="text-5xl opacity-20">👥</div>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                <div class="bg-white border border-gray-100 p-5 rounded-lg shadow-sm">
+                    <p class="text-sm text-gray-500">Total Estudiantes</p>
+                    <p class="text-3xl font-bold text-tecsup-dark mt-2">{{ $totalEstudiantes }}</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm opacity-90">Total Tutores</p>
-                            <p class="text-4xl font-bold">{{ $totalTutores }}</p>
-                        </div>
-                        <div class="text-5xl opacity-20">👨‍🏫</div>
-                    </div>
+                <div class="bg-white border border-gray-100 p-5 rounded-lg shadow-sm">
+                    <p class="text-sm text-gray-500">Total Tutores</p>
+                    <p class="text-3xl font-bold text-tecsup-dark mt-2">{{ $totalTutores }}</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-6 rounded-lg shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm opacity-90">Total Entrevistas</p>
-                            <p class="text-4xl font-bold">{{ $totalEntrevistas }}</p>
-                        </div>
-                        <div class="text-5xl opacity-20">📋</div>
-                    </div>
+                <div class="bg-white border border-gray-100 p-5 rounded-lg shadow-sm">
+                    <p class="text-sm text-gray-500">Total Entrevistas</p>
+                    <p class="text-3xl font-bold text-tecsup-dark mt-2">{{ $totalEntrevistas }}</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-lg shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm opacity-90">Riesgo Alto Hoy</p>
-                            <p class="text-4xl font-bold">{{ $riesgos['alto'] ?? 0 }}</p>
-                        </div>
-                        <div class="text-5xl opacity-20">⚠️</div>
-                    </div>
+                <div class="bg-white border border-red-100 p-5 rounded-lg shadow-sm">
+                    <p class="text-sm text-gray-500">Riesgo Alto Hoy</p>
+                    <p class="text-3xl font-bold text-red-700 mt-2">{{ $riesgos['alto'] ?? 0 }}</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <!-- Gráfico de Distribución de Riesgo -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">📊 Distribución por Nivel de Riesgo</h3>
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold mb-4">Distribucion por Nivel de Riesgo</h3>
                     <div class="relative h-80">
                         <canvas id="riesgoChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Últimas Entrevistas -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">📅 Últimas Entrevistas</h3>
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold mb-4">Ultimas Entrevistas</h3>
                     <div class="space-y-3 max-h-80 overflow-y-auto">
                         @forelse($ultimasEntrevistas as $entrevista)
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition">
                                 <div>
                                     <p class="font-semibold text-sm">{{ $entrevista->asignacion->estudiante->user->name }}</p>
                                     <p class="text-xs text-gray-500">{{ $entrevista->fecha->format('d/m/Y') }}</p>
@@ -90,34 +67,38 @@
                 </div>
             </div>
 
-            <!-- Acciones Rápidas -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <a href="{{ route('admin.reportes.informe') }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:shadow-lg transition cursor-pointer">
-                    <div class="text-3xl mb-2">📄</div>
-                    <h4 class="font-semibold">Informe General</h4>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                <a href="{{ route('admin.reportes.informe') }}" class="bg-white border border-gray-100 rounded-lg p-5 hover:shadow-md transition">
+                    <p class="text-xs font-semibold text-tecsup-cyan uppercase tracking-wide">PDF</p>
+                    <h4 class="font-semibold mt-2">Informe General</h4>
                     <p class="text-sm text-gray-600 mt-2">Generar PDF con datos generales</p>
                 </a>
 
-                <a href="{{ route('admin.reportes.excel') }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:shadow-lg transition cursor-pointer">
-                    <div class="text-3xl mb-2">📊</div>
-                    <h4 class="font-semibold">Exportar a Excel</h4>
-                    <p class="text-sm text-gray-600 mt-2">Descargar todas las entrevistas</p>
+                <a href="{{ route('admin.reportes.excel') }}" class="bg-white border border-gray-100 rounded-lg p-5 hover:shadow-md transition">
+                    <p class="text-xs font-semibold text-tecsup-cyan uppercase tracking-wide">Excel</p>
+                    <h4 class="font-semibold mt-2">Exportar Entrevistas</h4>
+                    <p class="text-sm text-gray-600 mt-2">Descargar entrevistas en bloque</p>
                 </a>
 
-                <a href="{{ route('admin.auditoria.index') }}" class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:shadow-lg transition cursor-pointer">
-                    <div class="text-3xl mb-2">🔍</div>
-                    <h4 class="font-semibold">Auditoría</h4>
+                <a href="{{ route('admin.reportes.fichas-masivas') }}" class="bg-white border border-gray-100 rounded-lg p-5 hover:shadow-md transition">
+                    <p class="text-xs font-semibold text-tecsup-cyan uppercase tracking-wide">ZIP</p>
+                    <h4 class="font-semibold mt-2">Fichas Masivas</h4>
+                    <p class="text-sm text-gray-600 mt-2">Generar fichas PDF por lote</p>
+                </a>
+
+                <a href="{{ route('admin.auditoria.index') }}" class="bg-white border border-gray-100 rounded-lg p-5 hover:shadow-md transition">
+                    <p class="text-xs font-semibold text-tecsup-cyan uppercase tracking-wide">Control</p>
+                    <h4 class="font-semibold mt-2">Auditoria</h4>
                     <p class="text-sm text-gray-600 mt-2">Ver registros del sistema</p>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Gráfico de Riesgo
         const ctx = document.getElementById('riesgoChart').getContext('2d');
+
         new Chart(ctx, {
             type: 'doughnut',
             data: {

@@ -31,6 +31,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/estudiantes/importar', [AdminController::class, 'importarCSV'])->name('importar.csv');
     Route::get('/asignaciones', [AdminController::class, 'asignacionesForm'])->name('asignaciones');
     Route::post('/asignaciones', [AdminController::class, 'asignarTutoria'])->name('asignaciones.guardar');
+    Route::get('/encuestas', [AdminController::class, 'encuestas'])->name('encuestas.index');
+    Route::get('/encuestas/{asignacion}', [AdminController::class, 'nuevaEncuesta'])->name('encuestas.crear');
+    Route::post('/encuestas', [AdminController::class, 'guardarEncuesta'])->name('encuestas.guardar');
     Route::get('/configuracion', [AdminController::class, 'configuracion'])->name('config');
     Route::post('/configuracion', [AdminController::class, 'guardarConfig'])->name('config.guardar');
     
@@ -38,6 +41,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/reportes/ficha/{estudiante}', [AdminController::class, 'fichaIndividualPDF'])->name('reportes.ficha');
     Route::get('/reportes/informe-general', [AdminController::class, 'informeGeneralPDF'])->name('reportes.informe');
     Route::get('/reportes/exportar-excel', [AdminController::class, 'exportarExcel'])->name('reportes.excel');
+    Route::get('/reportes/fichas-masivas', [AdminController::class, 'exportarFichasMasivas'])->name('reportes.fichas-masivas');
     
     // CUS10: Rutas de auditoría
     Route::get('/auditoria', [AuditController::class, 'index'])->name('auditoria.index');

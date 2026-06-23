@@ -10,7 +10,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1 admin
         User::create([
             'name' => 'Administrador SMER',
             'email' => 'admin@smer.com',
@@ -19,33 +18,32 @@ class UserSeeder extends Seeder
             'estado' => true,
         ]);
 
-        // 3 tutores
         $tutores = [
-            ['name' => 'Carlos Mendoza', 'email' => 'carlos.mendoza@universidad.edu'],
-            ['name' => 'María López', 'email' => 'maria.lopez@universidad.edu'],
-            ['name' => 'Juan Pérez', 'email' => 'juan.perez@universidad.edu'],
+            ['name' => 'Carlos Mendoza', 'email' => 'carlos.mendoza@tecsup.edu.pe'],
+            ['name' => 'Maria Lopez', 'email' => 'maria.lopez@tecsup.edu.pe'],
+            ['name' => 'Juan Perez', 'email' => 'juan.perez@tecsup.edu.pe'],
         ];
 
-        foreach ($tutores as $t) {
+        foreach ($tutores as $tutor) {
             User::create([
-                'name' => $t['name'],
-                'email' => $t['email'],
+                'name' => $tutor['name'],
+                'email' => $tutor['email'],
                 'password' => Hash::make('tutor123'),
                 'rol_id' => 2,
                 'estado' => true,
             ]);
         }
 
-        // 20 estudiantes
         $estudiantes = [
-            'Ana Torres', 'Luis García', 'Carmen Ruiz', 'Pedro Sánchez', 'Sofía Ramírez',
-            'Diego Fernández', 'Valeria Ortiz', 'Andrés Castro', 'Gabriela Vargas', 'Fernando Silva',
-            'Isabella Ríos', 'Mateo Delgado', 'Camila Herrera', 'Santiago Morales', 'Luciana Vega',
-            'Sebastián Medina', 'Daniela Campos', 'Emilio Guerrero', 'Renata Flores', 'Adrián Rivas',
+            'Ana Torres', 'Luis Garcia', 'Carmen Ruiz', 'Pedro Sanchez', 'Sofia Ramirez',
+            'Diego Fernandez', 'Valeria Ortiz', 'Andres Castro', 'Gabriela Vargas', 'Fernando Silva',
+            'Isabella Rios', 'Mateo Delgado', 'Camila Herrera', 'Santiago Morales', 'Luciana Vega',
+            'Sebastian Medina', 'Daniela Campos', 'Emilio Guerrero', 'Renata Flores', 'Adrian Rivas',
         ];
 
-        foreach ($estudiantes as $i => $nombre) {
-            $email = strtolower(str_replace(' ', '.', $nombre)) . '@universidad.edu';
+        foreach ($estudiantes as $nombre) {
+            $email = strtolower(str_replace(' ', '.', $nombre)) . '@tecsup.edu.pe';
+
             User::create([
                 'name' => $nombre,
                 'email' => $email,

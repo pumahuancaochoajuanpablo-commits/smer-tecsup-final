@@ -2,35 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AuditLogsExport;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AuditController extends Controller
 {
     /**
-     * CUS10: Mostrar logs de auditoría
+     * CUS10: Mostrar logs de auditoria.
      */
     public function index(Request $request)
     {
         $query = AuditLog::with('user')
             ->orderBy('created_at', 'desc');
 
-        // Filtrar por acción
         if ($request->filled('accion')) {
             $query->where('accion', $request->accion);
         }
 
-        // Filtrar por modelo
         if ($request->filled('modelo')) {
             $query->where('modelo', $request->modelo);
         }
 
-        // Filtrar por usuario
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
 
-        // Filtrar por rango de fechas
         if ($request->filled('desde')) {
             $query->whereDate('created_at', '>=', $request->desde);
         }
@@ -46,23 +44,15 @@ class AuditController extends Controller
         return view('admin.auditoria.index', compact('logs', 'acciones', 'modelos'));
     }
 
-    /**
-     * Mostrar detalles de un log
-     */
     public function show(AuditLog $log)
     {
         return view('admin.auditoria.show', compact('log'));
     }
 
-    /**
-     * Exportar logs a Excel
-     */
-    public function exportarExcel()
+    public function exportarExcel(Request $request)
     {
-        $logs = AuditLog::with('user')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $filters = $request->only(['accion', 'modelo', 'user_id', 'desde', 'hasta']);
 
-        return \Excel::download(new \App\Exports\AuditLogsExport($logs), 'auditoria_' . now()->format('Y-m-d') . '.xlsx');
+        return Excel::download(new AuditLogsExport($filters), 'auditoria_' . now()->format('Y-m-d') . '.xlsx');
     }
 }

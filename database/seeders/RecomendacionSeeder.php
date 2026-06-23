@@ -16,11 +16,11 @@ class RecomendacionSeeder extends Seeder
             ],
             [
                 'nivel_riesgo' => 'medio',
-                'acciones' => 'Derivar a consejería estudiantil. Monitoreo quincenal. Citar a reunión con padres de familia.',
+                'acciones' => 'Derivar a consejeria estudiantil. Monitoreo quincenal. Citar a reunion con padres de familia.',
             ],
             [
                 'nivel_riesgo' => 'alto',
-                'acciones' => 'Derivación psicológica inmediata. Notificar a Bienestar Universitario. Activación de protocolo de intervención.',
+                'acciones' => 'Derivacion psicologica inmediata. Notificar a Bienestar Estudiantil. Activacion de protocolo de intervencion.',
             ],
         ]);
     }

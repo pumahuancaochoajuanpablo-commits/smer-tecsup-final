@@ -2,36 +2,25 @@
 
 namespace App\Services;
 
+use App\Exports\EntrevistasExport;
 use App\Models\Entrevista;
 use App\Models\Estudiante;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use ZipArchive;
 
 class ReporteService
 {
-    /**
-     * Generar PDF de ficha individual de estudiante
-     */
     public function fichaIndividualPDF(Estudiante $estudiante)
     {
-        $asignacion = $estudiante->asignaciones()->first();
-        $entrevistas = Entrevista::where('asignacion_id', $asignacion?->id)
-            ->orderBy('fecha', 'desc')
-            ->get();
-
-        $data = [
-            'estudiante' => $estudiante->load('user'),
-            'asignacion' => $asignacion,
-            'entrevistas' => $entrevistas,
-            'resumen' => $this->generarResumen($entrevistas),
-        ];
+        $data = $this->datosFichaIndividual($estudiante);
 
         $pdf = Pdf::loadView('reportes.ficha-individual', $data);
+
         return $pdf->download("ficha_{$estudiante->codigo}.pdf");
     }
 
-    /**
-     * Generar PDF de informe general
-     */
     public function informeGeneralPDF()
     {
         $entrevistas = Entrevista::with(['asignacion.estudiante.user', 'asignacion.tutor.user'])
@@ -52,24 +41,66 @@ class ReporteService
         ];
 
         $pdf = Pdf::loadView('reportes.informe-general', $data);
-        return $pdf->download("informe_general_" . now()->format('Y-m-d') . ".pdf");
+
+        return $pdf->download('informe_general_' . now()->format('Y-m-d') . '.pdf');
     }
 
-    /**
-     * Generar Excel de entrevistas
-     */
     public function exportarEntrevistasExcel()
     {
-        return \Excel::download(new \App\Exports\EntrevistasExport, 'entrevistas_' . now()->format('Y-m-d') . '.xlsx');
+        return Excel::download(new EntrevistasExport(), 'entrevistas_' . now()->format('Y-m-d') . '.xlsx');
     }
 
-    /**
-     * Generar resumen estadístico de entrevistas
-     */
-    private function generarResumen($entrevistas)
+    public function exportarFichasMasivasZip()
+    {
+        abort_unless(extension_loaded('zip'), 500, 'La extension ZIP de PHP no esta habilitada.');
+
+        $folder = 'exports';
+        Storage::disk('local')->makeDirectory($folder);
+
+        $fileName = 'fichas_estudiantes_' . now()->format('Y-m-d_His') . '.zip';
+        $relativePath = "{$folder}/{$fileName}";
+        $absolutePath = Storage::disk('local')->path($relativePath);
+
+        $zip = new ZipArchive();
+        abort_if($zip->open($absolutePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true, 500, 'No se pudo crear el archivo ZIP.');
+
+        Estudiante::with('user')
+            ->orderBy('codigo')
+            ->chunk(50, function ($estudiantes) use ($zip) {
+                foreach ($estudiantes as $estudiante) {
+                    $data = $this->datosFichaIndividual($estudiante);
+                    $pdf = Pdf::loadView('reportes.ficha-individual', $data);
+                    $codigo = preg_replace('/[^A-Za-z0-9_-]/', '_', (string) $estudiante->codigo);
+
+                    $zip->addFromString("fichas/ficha_{$codigo}.pdf", $pdf->output());
+                }
+            });
+
+        $zip->close();
+
+        return response()->download($absolutePath)->deleteFileAfterSend(true);
+    }
+
+    private function datosFichaIndividual(Estudiante $estudiante): array
+    {
+        $estudiante->loadMissing('user');
+        $asignacion = $estudiante->asignaciones()->with('tutor.user')->first();
+        $entrevistas = Entrevista::where('asignacion_id', $asignacion?->id)
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        return [
+            'estudiante' => $estudiante,
+            'asignacion' => $asignacion,
+            'entrevistas' => $entrevistas,
+            'resumen' => $this->generarResumen($entrevistas),
+        ];
+    }
+
+    private function generarResumen($entrevistas): array
     {
         $total = $entrevistas->count();
-        
+
         if ($total === 0) {
             return [
                 'total' => 0,
@@ -82,24 +113,18 @@ class ReporteService
         $promedio = $entrevistas->avg('puntaje_total');
         $riesgos = $entrevistas->groupBy('nivel_riesgo')->map->count();
         $predominante = $riesgos->sortDesc()->keys()->first();
-
-        // Determinar tendencia (últimas 3 entrevistas)
         $ultimas = $entrevistas->take(3);
-        $tendencia = $this->determinarTendencia($ultimas);
 
         return [
             'total' => $total,
             'promedio_puntaje' => round($promedio, 2),
-            'riesgo_predominante' => strtoupper($predominante),
-            'tendencia' => $tendencia,
+            'riesgo_predominante' => strtoupper((string) $predominante),
+            'tendencia' => $this->determinarTendencia($ultimas),
             'distribucion' => $riesgos->toArray(),
         ];
     }
 
-    /**
-     * Determinar si el riesgo mejora o empeora
-     */
-    private function determinarTendencia($ultimas)
+    private function determinarTendencia($ultimas): string
     {
         if ($ultimas->count() < 2) {
             return 'Datos insuficientes';
@@ -111,16 +136,17 @@ class ReporteService
             'bajo' => 1,
         ];
 
-        $valores = $ultimas->pluck('nivel_riesgo')->map(fn($r) => $nivelRiesgo[$r])->toArray();
-        
+        $valores = $ultimas
+            ->pluck('nivel_riesgo')
+            ->map(fn ($riesgo) => $nivelRiesgo[$riesgo] ?? 0)
+            ->toArray();
+
         $diferencia = end($valores) - reset($valores);
 
-        if ($diferencia > 0) {
-            return '✅ Mejorando';
-        } elseif ($diferencia < 0) {
-            return '⚠️ Empeorando';
-        } else {
-            return '➡️ Estable';
-        }
+        return match (true) {
+            $diferencia > 0 => 'Mejorando',
+            $diferencia < 0 => 'Empeorando',
+            default => 'Estable',
+        };
     }
 }

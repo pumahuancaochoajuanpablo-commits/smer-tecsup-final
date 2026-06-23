@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             TutorSeeder::class,
             EstudianteSeeder::class,
             AsignacionSeeder::class,
+            EntrevistaSeeder::class,
             ParametroRiesgoSeeder::class,
             RecomendacionSeeder::class,
         ]);
