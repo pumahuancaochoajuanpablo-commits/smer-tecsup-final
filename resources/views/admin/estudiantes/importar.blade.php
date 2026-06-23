@@ -38,9 +38,28 @@
 
             <form method="POST" action="{{ route('admin.importar.csv') }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
-                <div>
+                <div x-data="{ fileName: '' }">
                     <label class="tecsup-label">Archivo CSV</label>
-                    <input type="file" name="archivo" accept=".csv,.txt,text/csv,text/plain" class="tecsup-input" required>
+                    <input
+                        x-ref="archivo"
+                        type="file"
+                        name="archivo"
+                        accept=".csv,.txt,text/csv,text/plain"
+                        class="sr-only"
+                        required
+                        @change="fileName = $event.target.files.length ? $event.target.files[0].name : ''"
+                    >
+
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-tecsup-border bg-white p-3">
+                        <button
+                            type="button"
+                            class="btn-tecsup-outline justify-center"
+                            @click="$refs.archivo.click()"
+                        >
+                            Seleccionar archivo
+                        </button>
+                        <span class="text-sm text-gray-600 break-all" x-text="fileName || 'Ningun archivo seleccionado'"></span>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-tecsup-primary">Importar estudiantes</button>
