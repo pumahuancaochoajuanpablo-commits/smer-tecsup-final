@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($estudiantes as $nombre) {
-            $email = strtolower(str_replace(' ', '.', $nombre)) . '@tecsup.edu.pe';
+            $email = strtolower(str_replace(' ', '.', $nombre)).'@tecsup.edu.pe';
 
             User::create([
                 'name' => $nombre,
@@ -52,5 +52,15 @@ class UserSeeder extends Seeder
                 'estado' => true,
             ]);
         }
+
+        User::updateOrCreate(
+            ['email' => 'yeferson.quispe@tecsup.edu.pe'],
+            [
+                'name' => 'Yeferson Quispe',
+                'password' => Hash::make('admin123'),
+                'rol_id' => 1,
+                'estado' => true,
+            ]
+        );
     }
 }

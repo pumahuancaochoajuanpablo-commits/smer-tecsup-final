@@ -29,12 +29,8 @@ class AuditLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Registrar acción de auditoría
-     */
     public static function registrar($accion, $modelo, $modeloId = null, $detalles = null)
     {
-        // Guard against missing request() or auth() contexts (console, jobs, tests)
         try {
             $ip = request()->ip();
             $userAgent = request()->userAgent();
@@ -50,8 +46,7 @@ class AuditLog extends Model
             $userId = null;
         }
 
-        // Normalize detalles: ensure it's an array for JSON casting
-        if ($detalles !== null && !is_array($detalles)) {
+        if ($detalles !== null && ! is_array($detalles)) {
             if (is_string($detalles)) {
                 $decoded = json_decode($detalles, true);
                 $detalles = $decoded ?? ['info' => $detalles];

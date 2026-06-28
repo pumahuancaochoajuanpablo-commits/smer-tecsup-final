@@ -11,10 +11,10 @@ return new class extends Migration
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->string('accion'); // create, update, delete, view, download
-            $table->string('modelo'); // Entrevista, Estudiante, etc.
+            $table->string('accion');
+            $table->string('modelo');
             $table->unsignedBigInteger('modelo_id')->nullable();
-            $table->text('detalles')->nullable(); // JSON con cambios realizados
+            $table->text('detalles')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();

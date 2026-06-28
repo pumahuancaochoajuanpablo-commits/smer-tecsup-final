@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "smer/tecsup",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Sistema de Monitoreo de Riesgo Estudiantil para Tecsup.",
+    "keywords": ["smer", "tecsup", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

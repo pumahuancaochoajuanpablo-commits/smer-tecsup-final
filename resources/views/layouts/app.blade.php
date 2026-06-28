@@ -11,22 +11,22 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-gray-100 overflow-x-hidden" x-data="{ sidebarOpen: false }">
-    <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-white flex items-center justify-between px-4 sm:px-8 border-b border-gray-100">
-        <div class="flex items-center gap-3">
+    <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-white flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-gray-100">
+        <div class="flex items-center gap-3 min-w-0">
             <button @click="sidebarOpen = !sidebarOpen"
-                    class="sm:hidden text-tecsup-dark/70 hover:text-tecsup-dark p-1 rounded focus:outline-none"
+                    class="lg:hidden text-tecsup-dark/70 hover:text-tecsup-dark p-1 rounded focus:outline-none shrink-0"
                     aria-label="Abrir menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <span class="text-tecsup-cyan font-bold text-base sm:text-xl tracking-wide leading-tight">
+            <span class="text-tecsup-cyan font-bold text-base md:text-xl tracking-wide leading-tight truncate">
                 Sistema de Monitoreo Estudiantil
             </span>
         </div>
 
         @auth
-        <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+        <div class="hidden lg:flex items-center gap-2 text-sm text-gray-500">
             <span class="font-medium text-gray-700">{{ Auth::user()->name }}</span>
             <span class="px-3 py-1 rounded-full bg-tecsup-cyan/10 text-tecsup-cyan font-semibold capitalize">
                 {{ Auth::user()->rol->nombre }}
@@ -38,12 +38,12 @@
     <div class="flex pt-16 min-h-screen">
         <div x-show="sidebarOpen"
              @click="sidebarOpen = false"
-             class="fixed inset-0 z-30 bg-black/50 sm:hidden"
+             class="fixed inset-0 z-30 bg-black/50 lg:hidden"
              style="display:none;">
         </div>
 
-        <aside class="fixed top-[76px] left-3 sm:top-[80px] sm:left-4 bottom-4 z-40 w-[min(18rem,calc(100vw-1.5rem))] sm:w-64 rounded-[24px] sm:rounded-[30px] bg-tecsup-cyan shadow-xl flex flex-col transform transition-transform duration-200 ease-in-out -translate-x-[calc(100%+1.5rem)] sm:translate-x-0"
-               :class="{ 'translate-x-0': sidebarOpen, '-translate-x-[calc(100%+1.5rem)]': !sidebarOpen }"
+        <aside class="smer-sidebar fixed top-[76px] left-4 bottom-4 z-40 w-[min(18rem,calc(100vw-2rem))] lg:w-64 rounded-[24px] lg:rounded-[30px] bg-tecsup-cyan shadow-xl flex flex-col"
+               :class="{ 'is-open': sidebarOpen }"
                x-cloak>
             <div class="px-4 py-4 flex items-center justify-center border-b border-white/25">
                 <img src="{{ asset('logo-tecsup.png') }}"
@@ -113,20 +113,20 @@
             @endauth
         </aside>
 
-        <main class="flex-1 sm:ml-[296px] bg-gray-50 min-h-screen flex flex-col">
-            <div class="p-3 sm:p-6 flex-1">
+        <main class="flex-1 lg:ml-[296px] bg-gray-50 min-h-screen flex flex-col min-w-0">
+            <div class="w-full p-3 md:p-5 lg:p-6 flex-1">
                 @isset($header)
                 @auth
                 @php $rolNombre = Auth::user()->rol->nombre; @endphp
-                <div class="bg-tecsup-dark text-white rounded-2xl sm:rounded-full px-4 sm:px-6 py-3 mb-5 sm:mb-6 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 [&_h1]:!text-white [&_h2]:!text-white [&_h1]:!font-bold [&_h2]:!font-bold">
-                    <div class="text-lg sm:text-lg tracking-wide text-white leading-tight break-words">{{ $header }}</div>
-                    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <div class="bg-tecsup-dark text-white rounded-2xl md:rounded-full px-4 md:px-6 py-3 mb-5 md:mb-6 shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-3 [&_h1]:!text-white [&_h2]:!text-white [&_h1]:!font-bold [&_h2]:!font-bold">
+                    <div class="text-base md:text-lg tracking-wide text-white leading-tight break-words min-w-0">{{ $header }}</div>
+                    <div class="flex items-center gap-2 md:gap-3 shrink-0">
                         <div class="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5">
                             <svg class="w-4 h-4 text-white/70 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                             </svg>
-                            <span class="text-white text-sm font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
-                            <span class="text-white text-sm font-medium sm:hidden">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                            <span class="text-white text-sm font-medium hidden md:inline">{{ Auth::user()->name }}</span>
+                            <span class="text-white text-sm font-medium md:hidden">{{ explode(' ', Auth::user()->name)[0] }}</span>
                         </div>
                         <span class="bg-tecsup-cyan text-white text-xs font-bold px-3 py-1 rounded-full capitalize">
                             {{ ucfirst($rolNombre) }}

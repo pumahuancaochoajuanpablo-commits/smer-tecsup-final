@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditController;
+use App\Http\Controllers\DerivacionController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorController;
-use App\Http\Controllers\AuditController;
-use App\Http\Controllers\DerivacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,7 +22,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Admin routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/tutores', [AdminController::class, 'tutores'])->name('tutores');
@@ -38,24 +37,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/encuestas', [AdminController::class, 'guardarEncuesta'])->name('encuestas.guardar');
     Route::get('/configuracion', [AdminController::class, 'configuracion'])->name('config');
     Route::post('/configuracion', [AdminController::class, 'guardarConfig'])->name('config.guardar');
-    
-    // CUS08: Rutas de reportes
     Route::get('/reportes/ficha/{estudiante}', [AdminController::class, 'fichaIndividualPDF'])->name('reportes.ficha');
     Route::get('/reportes/informe-general', [AdminController::class, 'informeGeneralPDF'])->name('reportes.informe');
     Route::get('/reportes/exportar-excel', [AdminController::class, 'exportarExcel'])->name('reportes.excel');
     Route::get('/reportes/fichas-masivas', [AdminController::class, 'exportarFichasMasivas'])->name('reportes.fichas-masivas');
-    
-    // CUS10: Rutas de auditoría
     Route::get('/auditoria', [AuditController::class, 'index'])->name('auditoria.index');
     Route::get('/auditoria/{log}', [AuditController::class, 'show'])->name('auditoria.show');
     Route::get('/auditoria/exportar/excel', [AuditController::class, 'exportarExcel'])->name('auditoria.excel');
-    
-    // CUS06: Rutas de derivaciones (solo para admin)
     Route::get('/derivaciones/estadisticas', [DerivacionController::class, 'estadisticas'])->name('derivaciones.estadisticas');
     Route::put('/derivaciones/{id}/actualizar', [DerivacionController::class, 'actualizar'])->name('derivaciones.actualizar');
 });
 
-// Tutor routes
 Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->group(function () {
     Route::get('/dashboard', [TutorController::class, 'dashboard'])->name('dashboard');
     Route::get('/mis-estudiantes', [TutorController::class, 'misEstudiantes'])->name('estudiantes');
@@ -66,8 +58,6 @@ Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->grou
     Route::post('/observaciones/guardar', [TutorController::class, 'guardarObservacion'])->name('observaciones.guardar');
     Route::get('/alertas', [TutorController::class, 'alertas'])->name('alertas');
     Route::get('/reportes/ficha/{estudiante}', [TutorController::class, 'reporteEstudiante'])->name('reportes.ficha');
-    
-    // CUS06: Derivaciones
     Route::get('/derivaciones', [DerivacionController::class, 'index'])->name('derivaciones');
     Route::get('/derivar/{estudianteId}', [DerivacionController::class, 'crear'])->name('derivar');
     Route::post('/derivaciones/registrar', [DerivacionController::class, 'registrar'])->name('derivaciones.registrar');
@@ -75,14 +65,12 @@ Route::middleware(['auth', 'role:tutor'])->prefix('tutor')->name('tutor.')->grou
     Route::put('/derivaciones/{id}/actualizar', [DerivacionController::class, 'actualizar'])->name('derivaciones.actualizar');
 });
 
-// Estudiante routes
 Route::middleware(['auth', 'role:estudiante'])->prefix('estudiante')->name('estudiante.')->group(function () {
     Route::get('/mi-estado', [EstudianteController::class, 'miEstado'])->name('estado');
     Route::get('/notificaciones', [EstudianteController::class, 'notificaciones'])->name('notificaciones');
     Route::post('/notificaciones/leer', [EstudianteController::class, 'marcarLeido'])->name('notificaciones.leer');
 });
 
-// CUS06: Rutas compartidas de derivaciones (admin y tutor)
 Route::middleware(['auth', 'role:admin,tutor'])->group(function () {
     Route::get('/derivaciones', [DerivacionController::class, 'index'])->name('derivaciones.index');
     Route::get('/derivaciones/estadisticas', [DerivacionController::class, 'estadisticas'])->name('derivaciones.estadisticas');
@@ -92,4 +80,4 @@ Route::middleware(['auth', 'role:admin,tutor'])->group(function () {
     Route::put('/derivaciones/{id}/actualizar', [DerivacionController::class, 'actualizar'])->name('derivaciones.actualizar');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

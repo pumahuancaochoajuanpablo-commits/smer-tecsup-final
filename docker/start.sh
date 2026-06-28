@@ -5,7 +5,7 @@ export PORT="${PORT:-8080}"
 
 if ! php -r '$key = getenv("APP_KEY") ?: ""; if (str_starts_with($key, "base64:")) { $decoded = base64_decode(substr($key, 7), true); exit(in_array(strlen($decoded ?: ""), [16, 32], true) ? 0 : 1); } exit(strlen($key) === 32 ? 0 : 1);'; then
     export APP_KEY="$(php artisan key:generate --show --no-ansi)"
-    echo "Generated runtime Laravel APP_KEY because the configured value was missing or incompatible."
+    echo "APP_KEY generada en tiempo de ejecucion porque el valor configurado estaba vacio o no era compatible."
 fi
 
 sed -i "s/^Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf

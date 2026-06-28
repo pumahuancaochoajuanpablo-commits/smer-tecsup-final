@@ -5,15 +5,15 @@
         </h2>
     </x-slot>
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-2 md:py-6">
+        <div class="max-w-7xl mx-auto">
             @if(session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-4">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5 mb-6">
                 <div class="bg-white border border-gray-100 p-5 rounded-lg shadow-sm">
                     <p class="text-sm text-gray-500">Total Estudiantes</p>
                     <p class="text-3xl font-bold text-tecsup-dark mt-2">{{ $totalEstudiantes }}</p>
@@ -35,24 +35,24 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6 border border-gray-100">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-6 mb-6">
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-4 md:p-6 border border-gray-100">
                     <h3 class="text-lg font-semibold mb-4">Distribucion por Nivel de Riesgo</h3>
-                    <div class="relative h-80">
+                    <div class="chart-frame">
                         <canvas id="riesgoChart"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6 border border-gray-100">
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg p-4 md:p-6 border border-gray-100">
                     <h3 class="text-lg font-semibold mb-4">Ultimas Entrevistas</h3>
                     <div class="space-y-3 max-h-80 overflow-y-auto">
                         @forelse($ultimasEntrevistas as $entrevista)
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition">
-                                <div>
+                            <div class="flex items-start justify-between gap-3 p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition">
+                                <div class="min-w-0">
                                     <p class="font-semibold text-sm">{{ $entrevista->asignacion->estudiante->user->name }}</p>
                                     <p class="text-xs text-gray-500">{{ $entrevista->fecha->format('d/m/Y') }}</p>
                                 </div>
-                                <span class="px-3 py-1 text-xs rounded font-semibold
+                                <span class="shrink-0 px-3 py-1 text-xs rounded font-semibold
                                     @if($entrevista->nivel_riesgo === 'alto') bg-red-100 text-red-800
                                     @elseif($entrevista->nivel_riesgo === 'medio') bg-yellow-100 text-yellow-800
                                     @else bg-green-100 text-green-800
@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
                 <a href="{{ route('admin.reportes.informe') }}" class="bg-white border border-gray-100 rounded-lg p-5 hover:shadow-md transition">
                     <p class="text-xs font-semibold text-tecsup-cyan uppercase tracking-wide">PDF</p>
                     <h4 class="font-semibold mt-2">Informe General</h4>

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">Panel de Tutoria</x-slot>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-tecsup-dark rounded-xl p-5 flex flex-col gap-1 border-l-4 border-green-500 shadow">
             <span class="text-white/60 text-xs font-semibold uppercase tracking-widest">Riesgo bajo</span>
             <span class="text-4xl font-bold text-white">{{ $riesgos['bajo'] ?? 0 }}</span>
@@ -21,18 +21,20 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow border border-tecsup-border p-6 mb-6">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+    <div class="bg-white rounded-xl shadow border border-tecsup-border p-4 md:p-6 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
             <div>
                 <h3 class="text-tecsup-dark font-semibold text-base">Evolucion del riesgo</h3>
                 <p class="text-sm text-gray-500">Distribucion de estudiantes por nivel en las ultimas entrevistas.</p>
             </div>
             <a href="{{ route('tutor.estudiantes') }}" class="btn-tecsup-outline justify-center">Registrar encuesta</a>
         </div>
-        <canvas id="chartRiesgo" height="100"></canvas>
+        <div class="chart-frame">
+            <canvas id="chartRiesgo"></canvas>
+        </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow border border-tecsup-border p-6">
+    <div class="bg-white rounded-xl shadow border border-tecsup-border p-4 md:p-6">
         <h3 class="text-tecsup-dark font-semibold text-base mb-4">Ultimas encuestas registradas</h3>
 
         @if($ultimasEntrevistas->isEmpty())
@@ -102,6 +104,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'top' } },
                 scales: {
                     y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.05)' } },

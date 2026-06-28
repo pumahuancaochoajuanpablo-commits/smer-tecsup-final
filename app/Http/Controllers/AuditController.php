@@ -9,9 +9,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AuditController extends Controller
 {
-    /**
-     * CUS10: Mostrar logs de auditoria.
-     */
     public function index(Request $request)
     {
         $query = AuditLog::with('user')
@@ -53,6 +50,6 @@ class AuditController extends Controller
     {
         $filters = $request->only(['accion', 'modelo', 'user_id', 'desde', 'hasta']);
 
-        return Excel::download(new AuditLogsExport($filters), 'auditoria_' . now()->format('Y-m-d') . '.xlsx');
+        return Excel::download(new AuditLogsExport($filters), 'auditoria_'.now()->format('Y-m-d').'.xlsx');
     }
 }

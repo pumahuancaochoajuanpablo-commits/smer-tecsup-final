@@ -9,9 +9,6 @@ class AsignacionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Tutor 1 (user_id 2) -> estudiantes 5-11 (7 estudiantes)
-        // Tutor 2 (user_id 3) -> estudiantes 12-17 (6 estudiantes)
-        // Tutor 3 (user_id 4) -> estudiantes 18-24 (7 estudiantes)
 
         $asignaciones = [];
         $estId = 5;
