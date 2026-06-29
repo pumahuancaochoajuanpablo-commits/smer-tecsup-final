@@ -31,11 +31,11 @@ class AuditLogsExport implements FromQuery, WithHeadings, WithMapping, WithStyle
         return [
             $log->created_at?->format('d/m/Y H:i:s') ?? 'N/A',
             $log->user?->name ?? 'Sistema',
-            strtoupper((string) $log->accion),
+            $this->accionLegible($log->accion),
             $log->modelo,
             $log->modelo_id,
             $log->ip_address,
-            json_encode($log->detalles ?? [], JSON_UNESCAPED_UNICODE),
+            $this->detallesLegibles($log->detalles ?? []),
         ];
     }
 
@@ -46,10 +46,43 @@ class AuditLogsExport implements FromQuery, WithHeadings, WithMapping, WithStyle
             'Usuario',
             'Accion',
             'Modelo',
-            'ID Registro',
+            'Registro',
             'Direccion IP',
             'Detalles',
         ];
+    }
+
+    private function accionLegible(?string $accion): string
+    {
+        return [
+            'create' => 'Creado',
+            'update' => 'Actualizado',
+            'delete' => 'Eliminado',
+        ][$accion] ?? ucfirst((string) $accion);
+    }
+
+    private function detallesLegibles(array $detalles): string
+    {
+        $campos = [
+            'asignacion_id' => 'Asignacion',
+            'estudiante' => 'Estudiante',
+            'puntaje' => 'Puntaje obtenido',
+            'nivel_riesgo' => 'Nivel de riesgo',
+            'info' => 'Informacion',
+        ];
+
+        return collect($detalles)
+            ->map(function ($valor, $campo) use ($campos) {
+                $etiqueta = $campos[$campo] ?? str_replace('_', ' ', ucfirst((string) $campo));
+                $contenido = is_array($valor) ? implode(', ', $valor) : $valor;
+
+                if (is_string($contenido)) {
+                    $contenido = ucfirst($contenido);
+                }
+
+                return $etiqueta . ': ' . $contenido;
+            })
+            ->implode(' | ');
     }
 
     public function styles(Worksheet $sheet)

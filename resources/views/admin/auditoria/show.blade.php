@@ -1,6 +1,33 @@
 <x-app-layout>
     <x-slot name="header">Detalle de auditoria</x-slot>
 
+    @php
+        $acciones = [
+            'create' => 'Registro creado',
+            'update' => 'Registro actualizado',
+            'delete' => 'Registro eliminado',
+        ];
+
+        $campos = [
+            'asignacion_id' => 'Asignacion',
+            'estudiante' => 'Estudiante',
+            'puntaje' => 'Puntaje obtenido',
+            'nivel_riesgo' => 'Nivel de riesgo',
+            'info' => 'Informacion',
+        ];
+
+        $detalleLegible = collect($log->detalles ?? [])->mapWithKeys(function ($valor, $campo) use ($campos) {
+            $etiqueta = $campos[$campo] ?? str_replace('_', ' ', ucfirst($campo));
+            $contenido = is_array($valor) ? implode(', ', $valor) : $valor;
+
+            if (is_string($contenido)) {
+                $contenido = ucfirst($contenido);
+            }
+
+            return [$etiqueta => $contenido];
+        });
+    @endphp
+
     <div class="max-w-4xl mx-auto">
         <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-tecsup-border">
             <div class="p-6 text-gray-900">
@@ -23,7 +50,7 @@
                             @elseif($log->accion === 'delete') bg-red-100 text-red-800
                             @else bg-gray-100 text-gray-800
                             @endif">
-                            {{ strtoupper($log->accion) }}
+                            {{ $acciones[$log->accion] ?? ucfirst($log->accion) }}
                         </span>
                     </div>
                     <div>
@@ -31,7 +58,7 @@
                         <p class="font-semibold">{{ $log->modelo }}</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600">ID registro</p>
+                        <p class="text-sm text-gray-600">Registro</p>
                         <p class="font-semibold">{{ $log->modelo_id ?? 'N/A' }}</p>
                     </div>
                     <div>
@@ -43,8 +70,21 @@
                 @if($log->detalles)
                 <div class="border-t pt-6">
                     <h3 class="text-lg font-semibold mb-4">Detalles de la accion</h3>
-                    <div class="bg-gray-50 p-4 rounded overflow-auto">
-                        <pre class="text-sm">{{ json_encode($log->detalles, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                    <div class="rounded-lg border border-tecsup-border overflow-hidden">
+                        <table class="w-full text-sm">
+                            <tbody>
+                                @foreach($detalleLegible as $campo => $valor)
+                                    <tr class="odd:bg-white even:bg-tecsup-light/40">
+                                        <th class="w-1/3 border border-tecsup-border px-4 py-3 text-left font-semibold text-tecsup-dark">
+                                            {{ $campo }}
+                                        </th>
+                                        <td class="border border-tecsup-border px-4 py-3 text-tecsup-dark">
+                                            {{ $valor }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 @endif

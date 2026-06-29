@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $accionesLegibles = [
+        'create' => 'Creado',
+        'update' => 'Actualizado',
+        'delete' => 'Eliminado',
+    ];
+@endphp
+
 <div class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-100">
@@ -20,7 +28,7 @@
                                 <option value="">Todas</option>
                                 @foreach($acciones as $accion)
                                     <option value="{{ $accion }}" {{ request('accion') == $accion ? 'selected' : '' }}>
-                                        {{ ucfirst($accion) }}
+                                        {{ $accionesLegibles[$accion] ?? ucfirst($accion) }}
                                     </option>
                                 @endforeach
                             </select>
@@ -80,7 +88,7 @@
                                             @elseif($log->accion === 'delete') bg-red-100 text-red-800
                                             @else bg-gray-100 text-gray-800
                                             @endif">
-                                            {{ strtoupper($log->accion) }}
+                                            {{ $accionesLegibles[$log->accion] ?? ucfirst($log->accion) }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-2">{{ $log->modelo }}</td>
