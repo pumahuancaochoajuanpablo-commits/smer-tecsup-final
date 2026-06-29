@@ -18,8 +18,8 @@
              style="background: linear-gradient(135deg, #0C2333 0%, #0e3050 60%, #0CB9D7 100%);">
 
             <div class="mb-6 w-full sm:max-w-md">
-                <div class="bg-white rounded-full px-6 py-3 shadow-lg text-center">
-                    <span class="text-tecsup-cyan font-bold text-lg tracking-wide">
+                <div class="bg-tecsup-dark rounded-full px-6 py-3 shadow-lg text-center">
+                    <span class="text-white font-bold text-lg tracking-wide">
                         Sistema de Monitoreo Estudiantil
                     </span>
                 </div>
