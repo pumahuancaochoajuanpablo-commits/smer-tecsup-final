@@ -33,6 +33,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/asignaciones', [AdminController::class, 'asignacionesForm'])->name('asignaciones');
     Route::post('/asignaciones', [AdminController::class, 'asignarTutoria'])->name('asignaciones.guardar');
     Route::get('/encuestas', [AdminController::class, 'encuestas'])->name('encuestas.index');
+    Route::get('/encuestas/detalle/{entrevista}', [AdminController::class, 'verEncuesta'])->name('encuestas.ver');
     Route::get('/encuestas/{asignacion}', [AdminController::class, 'nuevaEncuesta'])->name('encuestas.crear');
     Route::post('/encuestas', [AdminController::class, 'guardarEncuesta'])->name('encuestas.guardar');
     Route::get('/configuracion', [AdminController::class, 'configuracion'])->name('config');

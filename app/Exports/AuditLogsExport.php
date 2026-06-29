@@ -45,7 +45,7 @@ class AuditLogsExport implements FromQuery, WithHeadings, WithMapping, WithStyle
             'Fecha',
             'Usuario',
             'Accion',
-            'Modelo',
+            'Tipo de registro',
             'Registro',
             'Direccion IP',
             'Detalles',

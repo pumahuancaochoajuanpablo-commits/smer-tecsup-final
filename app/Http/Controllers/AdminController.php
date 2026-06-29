@@ -273,6 +273,18 @@ class AdminController extends Controller
             ->with('recomendacion', $resultado['recomendacion']);
     }
 
+    public function verEncuesta(Entrevista $entrevista)
+    {
+        $entrevista->load([
+            'asignacion.estudiante.user',
+            'asignacion.tutor.user',
+            'observaciones',
+            'recomendacion',
+        ]);
+
+        return view('admin.encuestas.show', compact('entrevista'));
+    }
+
     public function configuracion()
     {
         $parametros = ParametroRiesgo::all()->keyBy('indicador');

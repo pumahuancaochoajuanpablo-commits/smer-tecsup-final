@@ -35,7 +35,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium">Modelo</label>
+                            <label class="block text-sm font-medium">Tipo de registro</label>
                             <select name="modelo" class="mt-1 block w-full border-gray-300 rounded">
                                 <option value="">Todos</option>
                                 @foreach($modelos as $modelo)
@@ -71,7 +71,7 @@
                                 <th class="px-4 py-2 text-left">Fecha</th>
                                 <th class="px-4 py-2 text-left">Usuario</th>
                                 <th class="px-4 py-2 text-left">Accion</th>
-                                <th class="px-4 py-2 text-left">Modelo</th>
+                                <th class="px-4 py-2 text-left">Tipo de registro</th>
                                 <th class="px-4 py-2 text-left">IP</th>
                                 <th class="px-4 py-2 text-left">Acciones</th>
                             </tr>

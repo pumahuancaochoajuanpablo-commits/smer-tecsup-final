@@ -47,7 +47,7 @@
                     <h3 class="text-lg font-semibold mb-4">Ultimas Entrevistas</h3>
                     <div class="space-y-3 max-h-80 overflow-y-auto">
                         @forelse($ultimasEntrevistas as $entrevista)
-                            <div class="flex items-start justify-between gap-3 p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition">
+                            <a href="{{ route('admin.encuestas.ver', $entrevista) }}" class="flex items-start justify-between gap-3 p-3 bg-gray-50 rounded-md hover:bg-tecsup-light transition border border-transparent hover:border-tecsup-cyan">
                                 <div class="min-w-0">
                                     <p class="font-semibold text-sm">{{ $entrevista->asignacion->estudiante->user->name }}</p>
                                     <p class="text-xs text-gray-500">{{ $entrevista->fecha->format('d/m/Y') }}</p>
@@ -59,7 +59,7 @@
                                     @endif">
                                     {{ strtoupper($entrevista->nivel_riesgo) }}
                                 </span>
-                            </div>
+                            </a>
                         @empty
                             <p class="text-gray-500 text-center py-8">Sin entrevistas registradas</p>
                         @endforelse

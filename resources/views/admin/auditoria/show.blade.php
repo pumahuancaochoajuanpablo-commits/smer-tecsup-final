@@ -54,7 +54,7 @@
                         </span>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600">Modelo</p>
+                        <p class="text-sm text-gray-600">Tipo de registro</p>
                         <p class="font-semibold">{{ $log->modelo }}</p>
                     </div>
                     <div>
