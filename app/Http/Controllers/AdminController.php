@@ -50,16 +50,19 @@ class AdminController extends Controller
 
     public function guardarTutor(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $data = $request->validate([
+            'nombres' => 'required|string|max:120',
+            'apellidos' => 'required|string|max:120',
             'email' => 'required|email|unique:users,email',
             'codigo' => 'required|unique:tutores,codigo',
             'especialidad' => 'required|string|max:100',
         ]);
 
+        $nombreCompleto = trim($data['nombres'] . ' ' . $data['apellidos']);
+
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $nombreCompleto,
+            'email' => $data['email'],
             'password' => Hash::make('tutor123'),
             'rol_id' => 2,
             'estado' => true,
@@ -67,8 +70,8 @@ class AdminController extends Controller
 
         Tutor::create([
             'user_id' => $user->id,
-            'codigo' => $request->codigo,
-            'especialidad' => $request->especialidad,
+            'codigo' => $data['codigo'],
+            'especialidad' => $data['especialidad'],
         ]);
 
         return redirect()->route('admin.tutores')->with('success', 'Tutor registrado correctamente.');
@@ -199,7 +202,8 @@ class AdminController extends Controller
             ->orderBy('codigo')
             ->get();
         $asignaciones = Asignacion::with(['tutor.user', 'estudiante.user'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('fecha_inicio', 'desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('admin.asignaciones.index', compact('tutores', 'estudiantes', 'asignaciones'));

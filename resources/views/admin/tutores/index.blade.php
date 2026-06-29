@@ -15,20 +15,24 @@
             <form method="POST" action="{{ route('admin.tutores.guardar') }}" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="tecsup-label">Nombre completo</label>
-                    <input type="text" name="name" class="tecsup-input" required>
+                    <label class="tecsup-label">Nombres</label>
+                    <input type="text" name="nombres" value="{{ old('nombres') }}" class="tecsup-input" required>
+                </div>
+                <div>
+                    <label class="tecsup-label">Apellidos</label>
+                    <input type="text" name="apellidos" value="{{ old('apellidos') }}" class="tecsup-input" required>
                 </div>
                 <div>
                     <label class="tecsup-label">Correo institucional</label>
-                    <input type="email" name="email" class="tecsup-input" required>
+                    <input type="email" name="email" value="{{ old('email') }}" class="tecsup-input" required>
                 </div>
                 <div>
                     <label class="tecsup-label">Codigo</label>
-                    <input type="text" name="codigo" placeholder="TUT004" class="tecsup-input" required>
+                    <input type="text" name="codigo" value="{{ old('codigo') }}" placeholder="TUT004" class="tecsup-input" required>
                 </div>
                 <div>
                     <label class="tecsup-label">Especialidad</label>
-                    <input type="text" name="especialidad" class="tecsup-input" required>
+                    <input type="text" name="especialidad" value="{{ old('especialidad') }}" class="tecsup-input" required>
                 </div>
                 <button type="submit" class="btn-tecsup-primary w-full justify-center">Registrar tutor</button>
             </form>

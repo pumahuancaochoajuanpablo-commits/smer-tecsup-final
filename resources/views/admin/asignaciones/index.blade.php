@@ -16,9 +16,9 @@
                 @csrf
 
                 <div>
-                    <label class="tecsup-label">Tutora</label>
+                    <label class="tecsup-label">Tutor</label>
                     <select name="tutor_id" class="tecsup-input" required>
-                        <option value="">Seleccionar tutora</option>
+                        <option value="">Seleccionar tutor</option>
                         @foreach($tutores as $tutor)
                             <option value="{{ $tutor->id }}">{{ $tutor->user->name }} ({{ $tutor->codigo }})</option>
                         @endforeach
@@ -38,7 +38,15 @@
                                 <input type="checkbox" name="estudiantes[]" value="{{ $estudiante->id }}" class="mt-1 rounded border-gray-300 text-tecsup-cyan">
                                 <span>
                                     <span class="block text-sm font-semibold text-tecsup-dark estudiante-texto">{{ $estudiante->user->name }} {{ $estudiante->codigo }}</span>
-                                    <span class="block text-xs text-gray-500">{{ $estudiante->codigo }} - {{ $estudiante->carrera }} {{ $estudiante->ciclo ? ' / Semestre ' . $estudiante->ciclo : '' }}</span>
+                                    <span class="block text-xs text-gray-500">
+                                        {{ $estudiante->codigo }} - {{ $estudiante->carrera }}
+                                        @if($estudiante->ciclo)
+                                            | Semestre {{ $estudiante->ciclo }}
+                                        @endif
+                                        @if($estudiante->grupo)
+                                            | Grupo {{ $estudiante->grupo }}
+                                        @endif
+                                    </span>
                                 </span>
                             </label>
                         @empty
@@ -54,26 +62,54 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 lg:col-span-2">
             <h3 class="text-lg font-semibold mb-4">Asignaciones Actuales</h3>
             <div class="overflow-x-auto">
-                <table class="tecsup-table">
+                <table class="tecsup-table border-separate border-spacing-0">
                     <thead>
                         <tr>
-                            <th>Tutora</th>
+                            <th>Tutor</th>
                             <th>Estudiante</th>
-                            <th>Carrera / Semestre / Grupo</th>
+                            <th>Carrera</th>
+                            <th>Semestre</th>
+                            <th>Grupo</th>
                             <th>Fecha Inicio</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($asignaciones as $asignacion)
                             <tr>
-                                <td>{{ $asignacion->tutor->user->name }}</td>
-                                <td>{{ $asignacion->estudiante->user->name }}</td>
-                                <td>{{ $asignacion->estudiante->carrera }} / {{ $asignacion->estudiante->ciclo ?? 'N/A' }} / {{ $asignacion->estudiante->grupo ?? 'N/A' }}</td>
-                                <td>{{ $asignacion->fecha_inicio->format('d/m/Y') }}</td>
+                                <td>
+                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 shadow-sm">
+                                        {{ $asignacion->tutor->user->name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 shadow-sm">
+                                        {{ $asignacion->estudiante->user->name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 shadow-sm min-w-56">
+                                        {{ $asignacion->estudiante->carrera }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 text-center shadow-sm">
+                                        {{ $asignacion->estudiante->ciclo ? 'Semestre ' . $asignacion->estudiante->ciclo : 'N/A' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 text-center shadow-sm">
+                                        {{ $asignacion->estudiante->grupo ? 'Grupo ' . $asignacion->estudiante->grupo : 'N/A' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 text-center shadow-sm">
+                                        {{ $asignacion->fecha_inicio->format('d/m/Y') }}
+                                    </div>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-gray-500 py-8">Sin asignaciones</td>
+                                <td colspan="6" class="text-center text-gray-500 py-8">Sin asignaciones</td>
                             </tr>
                         @endforelse
                     </tbody>
