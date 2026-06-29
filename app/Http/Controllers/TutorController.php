@@ -32,7 +32,14 @@ class TutorController extends Controller
         }
 
         $carreras = $asignaciones->pluck('estudiante.carrera')->unique()->values();
-        $chartLabels = $carreras->toArray();
+        $chartLabels = $carreras->map(fn ($carrera) => $this->codigoCarrera($carrera))->toArray();
+        $chartLeyendaCarreras = $carreras
+            ->map(fn ($carrera) => [
+                'codigo' => $this->codigoCarrera($carrera),
+                'nombre' => $carrera,
+            ])
+            ->values()
+            ->toArray();
         $chartAlto = [];
         $chartMedio = [];
         $chartBajo = [];
@@ -78,8 +85,42 @@ class TutorController extends Controller
             'chartAlto',
             'chartMedio',
             'chartBajo',
+            'chartLeyendaCarreras',
             'ultimasEntrevistas'
         ));
+    }
+
+    private function codigoCarrera(?string $carrera): string
+    {
+        $mapa = [
+            'Diseno y Desarrollo de Software' => 'DDS',
+            'Administracion de Redes y Comunicaciones' => 'ARC',
+            'Big Data y Ciencia de Datos' => 'BCD',
+            'Marketing Digital Analitico' => 'MDA',
+            'Gestion de Seguridad y Salud en el Trabajo' => 'GSST',
+            'Mecatronica y Gestion Automotriz' => 'MGA',
+            'Electricidad Industrial' => 'EI',
+            'Tecnologia Mecanica Electrica' => 'TME',
+            'Produccion y Gestion Industrial' => 'PGI',
+            'Diseno Industrial' => 'DI',
+        ];
+
+        if (!$carrera) {
+            return 'S/C';
+        }
+
+        if (isset($mapa[$carrera])) {
+            return $mapa[$carrera];
+        }
+
+        $palabras = preg_split('/\s+/', trim($carrera));
+        $codigo = collect($palabras)
+            ->filter(fn ($palabra) => mb_strlen($palabra) > 2)
+            ->map(fn ($palabra) => mb_substr($palabra, 0, 1))
+            ->take(4)
+            ->implode('');
+
+        return strtoupper($codigo ?: 'S/C');
     }
 
     public function misEstudiantes()

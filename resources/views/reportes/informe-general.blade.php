@@ -78,7 +78,7 @@
                     <td>{{ $entrevista->asignacion->estudiante->user->name ?? 'N/A' }}</td>
                     <td>{{ $entrevista->asignacion->estudiante->codigo ?? 'N/A' }}</td>
                     <td>{{ $entrevista->asignacion->tutor->user->name ?? 'N/A' }}</td>
-                    <td>{{ $entrevista->puntaje_total }}/10</td>
+                    <td>{{ $entrevista->puntaje_total }}/18</td>
                     <td><span class="badge badge-{{ $entrevista->nivel_riesgo }}">{{ strtoupper($entrevista->nivel_riesgo) }}</span></td>
                 </tr>
                 @empty

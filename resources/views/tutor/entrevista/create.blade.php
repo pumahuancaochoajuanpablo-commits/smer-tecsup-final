@@ -20,14 +20,14 @@
             ],
             'soc_2' => [
                 'criterio' => 'Trabajo en equipo',
-                'texto' => 'Como describirias tu experiencia al trabajar en equipo?',
+                'texto' => 'Como describirias tu experiencia al trabajar en equipo durante actividades academicas o extracurriculares?',
                 'alto' => 'Frecuentes conflictos o dificultad para colaborar.',
                 'medio' => 'Participacion moderada, a veces con problemas de coordinacion.',
                 'bajo' => 'Buena colaboracion y comunicacion positiva.',
             ],
             'econ_2' => [
                 'criterio' => 'Comunicacion efectiva',
-                'texto' => 'Que tan comodo(a) te sientes al expresar tus ideas en publico o al interactuar?',
+                'texto' => 'Que tan comodo(a) te sientes al expresar tus ideas en publico o al interactuar con companeros y docentes?',
                 'alto' => 'Muy incomodo(a) o evito hablar en publico.',
                 'medio' => 'A veces inseguro(a), pero logro comunicarme.',
                 'bajo' => 'Comodo(a) y claro(a) al comunicarme.',

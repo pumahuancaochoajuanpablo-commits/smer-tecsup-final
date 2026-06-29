@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Ficha Individual - {{ $estudiante->codigo }}</title>
     <style>
+        @page { size: A4 landscape; margin: 24px; }
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #366092; padding-bottom: 15px; }
         .header h1 { margin: 0; color: #366092; font-size: 24px; }
@@ -13,6 +14,12 @@
         table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background: #366092; color: white; }
+        .historial-table { table-layout: fixed; font-size: 11px; }
+        .historial-table th, .historial-table td { padding: 7px 6px; line-height: 1.25; }
+        .historial-table .fecha { width: 12%; }
+        .historial-table .indicador { width: 9.5%; text-align: center; }
+        .historial-table .puntaje { width: 9%; text-align: center; }
+        .historial-table .riesgo { width: 11%; text-align: center; }
         tr:nth-child(even) { background: #f9f9f9; }
         .badge { display: inline-block; padding: 5px 10px; border-radius: 3px; font-size: 12px; font-weight: bold; }
         .badge-alto { background: #dc3545; color: white; }
@@ -78,7 +85,7 @@
                 <th>Total de Entrevistas</th>
                 <td>{{ $resumen['total'] }}</td>
                 <th>Puntaje Promedio</th>
-                <td>{{ $resumen['promedio_puntaje'] }}/10</td>
+                <td>{{ $resumen['promedio_puntaje'] }}/18</td>
             </tr>
             <tr>
                 <th>Riesgo Predominante</th>
@@ -91,32 +98,32 @@
 
     <div class="section">
         <div class="section-title">HISTORIAL DE ENTREVISTAS</div>
-        <table>
+        <table class="historial-table">
             <thead>
                 <tr>
-                    <th>Fecha</th>
-                    <th>Academico</th>
-                    <th>Emocional</th>
-                    <th>Social</th>
-                    <th>Economico</th>
-                    <th>Familiar</th>
-                    <th>Salud</th>
-                    <th>Puntaje</th>
-                    <th>Riesgo</th>
+                    <th class="fecha">Fecha</th>
+                    <th class="indicador">Academico</th>
+                    <th class="indicador">Emocional</th>
+                    <th class="indicador">Social</th>
+                    <th class="indicador">Economico</th>
+                    <th class="indicador">Familiar</th>
+                    <th class="indicador">Salud</th>
+                    <th class="puntaje">Puntaje</th>
+                    <th class="riesgo">Riesgo</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($entrevistas as $entrevista)
                 <tr>
-                    <td>{{ $entrevista->fecha->format('d/m/Y') }}</td>
-                    <td>{{ $entrevista->acad_2 }}</td>
-                    <td>{{ $entrevista->emoc_2 }}</td>
-                    <td>{{ $entrevista->soc_2 }}</td>
-                    <td>{{ $entrevista->econ_2 }}</td>
-                    <td>{{ $entrevista->fam_2 }}</td>
-                    <td>{{ $entrevista->salud_2 }}</td>
-                    <td>{{ $entrevista->puntaje_total }}</td>
-                    <td><span class="badge badge-{{ $entrevista->nivel_riesgo }}">{{ strtoupper($entrevista->nivel_riesgo) }}</span></td>
+                    <td class="fecha">{{ $entrevista->fecha->format('d/m/Y') }}</td>
+                    <td class="indicador">{{ $entrevista->acad_2 }}</td>
+                    <td class="indicador">{{ $entrevista->emoc_2 }}</td>
+                    <td class="indicador">{{ $entrevista->soc_2 }}</td>
+                    <td class="indicador">{{ $entrevista->econ_2 }}</td>
+                    <td class="indicador">{{ $entrevista->fam_2 }}</td>
+                    <td class="indicador">{{ $entrevista->salud_2 }}</td>
+                    <td class="puntaje">{{ $entrevista->puntaje_total }}/18</td>
+                    <td class="riesgo"><span class="badge badge-{{ $entrevista->nivel_riesgo }}">{{ strtoupper($entrevista->nivel_riesgo) }}</span></td>
                 </tr>
                 @endforeach
             </tbody>

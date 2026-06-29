@@ -32,6 +32,16 @@
         <div class="chart-frame">
             <canvas id="chartRiesgo"></canvas>
         </div>
+        @if(!empty($chartLeyendaCarreras))
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs text-gray-600">
+                @foreach($chartLeyendaCarreras as $carrera)
+                    <div class="flex items-start gap-2">
+                        <span class="inline-flex min-w-12 justify-center rounded bg-tecsup-light px-2 py-1 font-semibold text-tecsup-dark">{{ $carrera['codigo'] }}</span>
+                        <span>{{ $carrera['nombre'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
     <div class="bg-white rounded-xl shadow border border-tecsup-border p-4 md:p-6">
