@@ -9,8 +9,8 @@
         <div class="tecsup-alert-danger mb-4">{{ $errors->first() }}</div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 lg:col-span-1">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 xl:col-span-1">
             <h3 class="text-lg font-semibold mb-4">Nueva Asignacion</h3>
             <form method="POST" action="{{ route('admin.asignaciones.guardar') }}" class="space-y-4">
                 @csrf
@@ -59,57 +59,33 @@
             </form>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 xl:col-span-3">
             <h3 class="text-lg font-semibold mb-4">Asignaciones Actuales</h3>
-            <div class="overflow-x-auto">
-                <table class="tecsup-table border-separate border-spacing-0">
+            <div class="rounded-lg border border-tecsup-border overflow-hidden">
+                <table class="w-full table-fixed text-sm">
                     <thead>
-                        <tr>
-                            <th>Tutor</th>
-                            <th>Estudiante</th>
-                            <th>Carrera</th>
-                            <th>Semestre</th>
-                            <th>Grupo</th>
-                            <th>Fecha Inicio</th>
+                        <tr class="bg-tecsup-dark text-white">
+                            <th class="w-[18%] border border-tecsup-dark px-3 py-3 text-left font-semibold uppercase tracking-wide">Tutor</th>
+                            <th class="w-[16%] border border-tecsup-dark px-3 py-3 text-left font-semibold uppercase tracking-wide">Estudiante</th>
+                            <th class="w-[30%] border border-tecsup-dark px-3 py-3 text-left font-semibold uppercase tracking-wide">Carrera</th>
+                            <th class="w-[10%] border border-tecsup-dark px-2 py-3 text-center font-semibold uppercase tracking-wide">Semestre</th>
+                            <th class="w-[10%] border border-tecsup-dark px-2 py-3 text-center font-semibold uppercase tracking-wide">Grupo</th>
+                            <th class="w-[16%] border border-tecsup-dark px-3 py-3 text-center font-semibold uppercase tracking-wide">Fecha Inicio</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($asignaciones as $asignacion)
-                            <tr>
-                                <td>
-                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 shadow-sm">
-                                        {{ $asignacion->tutor->user->name }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 shadow-sm">
-                                        {{ $asignacion->estudiante->user->name }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 shadow-sm min-w-56">
-                                        {{ $asignacion->estudiante->carrera }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 text-center shadow-sm">
-                                        {{ $asignacion->estudiante->ciclo ? 'Semestre ' . $asignacion->estudiante->ciclo : 'N/A' }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 text-center shadow-sm">
-                                        {{ $asignacion->estudiante->grupo ? 'Grupo ' . $asignacion->estudiante->grupo : 'N/A' }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="rounded-lg border border-tecsup-border bg-white px-3 py-2 text-center shadow-sm">
-                                        {{ $asignacion->fecha_inicio->format('d/m/Y') }}
-                                    </div>
-                                </td>
+                            <tr class="odd:bg-white even:bg-tecsup-light/45">
+                                <td class="border border-tecsup-border px-3 py-3 align-middle text-tecsup-dark break-words">{{ $asignacion->tutor->user->name }}</td>
+                                <td class="border border-tecsup-border px-3 py-3 align-middle text-tecsup-dark break-words">{{ $asignacion->estudiante->user->name }}</td>
+                                <td class="border border-tecsup-border px-3 py-3 align-middle text-tecsup-dark break-words">{{ $asignacion->estudiante->carrera }}</td>
+                                <td class="border border-tecsup-border px-2 py-3 align-middle text-center text-tecsup-dark">{{ $asignacion->estudiante->ciclo ?? 'N/A' }}</td>
+                                <td class="border border-tecsup-border px-2 py-3 align-middle text-center text-tecsup-dark">{{ $asignacion->estudiante->grupo ?? 'N/A' }}</td>
+                                <td class="border border-tecsup-border px-3 py-3 align-middle text-center text-tecsup-dark whitespace-nowrap">{{ $asignacion->fecha_inicio->format('d/m/Y') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-gray-500 py-8">Sin asignaciones</td>
+                                <td colspan="6" class="border border-tecsup-border text-center text-gray-500 py-8">Sin asignaciones</td>
                             </tr>
                         @endforelse
                     </tbody>
