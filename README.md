@@ -18,9 +18,19 @@ Sistema de Monitoreo de Riesgo Estudiantil orientado al registro de encuestas, c
 - PHP 8.2 o superior.
 - Laravel 12.
 - MySQL con XAMPP y phpMyAdmin para ejecucion local.
+- PostgreSQL en Render para la version publicada.
 - Vite, Tailwind CSS y Alpine.js para la interfaz.
 - DomPDF para reportes PDF.
 - Laravel Excel para exportaciones.
+
+## Modos de ejecucion
+
+El proyecto queda preparado para dos entornos:
+
+- Local: usa `.env.example`, MySQL, XAMPP y phpMyAdmin.
+- Render: usa `render.yaml`, `Dockerfile` y PostgreSQL administrado por Render.
+
+No se debe borrar `render.yaml`, `Dockerfile` ni la carpeta `docker`, porque esos archivos son necesarios para que la pagina publicada en Render siga funcionando. Para trabajar localmente no hace falta modificar esos archivos.
 
 ## Instalacion local
 
@@ -36,14 +46,30 @@ Tambien se puede crear por consola:
 CREATE DATABASE smer_tecsup CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-```bash
+En Windows, desde PowerShell o la terminal de Visual Studio Code:
+
+```powershell
 composer install
 npm install
-cp .env.example .env
+Copy-Item .env.example .env
 php artisan key:generate
 php artisan migrate --seed
 npm run build
 php artisan serve
+```
+
+Si `php` no se reconoce como comando, usa el PHP de XAMPP:
+
+```powershell
+C:\xampp\php\php.exe artisan key:generate
+C:\xampp\php\php.exe artisan migrate --seed
+C:\xampp\php\php.exe artisan serve
+```
+
+Si la base de datos ya tenia datos de pruebas y se quiere reiniciar desde cero:
+
+```powershell
+php artisan migrate:fresh --seed
 ```
 
 ## Acceso local
