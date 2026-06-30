@@ -13,7 +13,14 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $rol = auth()->user()->rol->nombre ?? null;
+
+    return match ($rol) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'tutor' => redirect()->route('tutor.dashboard'),
+        'estudiante' => redirect()->route('estudiante.estado'),
+        default => redirect()->route('login'),
+    };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
