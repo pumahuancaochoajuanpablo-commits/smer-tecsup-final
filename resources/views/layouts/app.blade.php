@@ -11,24 +11,24 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-gray-100 overflow-x-hidden" x-data="{ sidebarOpen: false }">
-    <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-white flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-gray-100">
+    <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-tecsup-cyan text-white flex items-center justify-between px-4 md:px-6 lg:px-8 border-b border-white/20 shadow-sm">
         <div class="flex items-center gap-3 min-w-0">
             <button @click="sidebarOpen = !sidebarOpen"
-                    class="lg:hidden text-tecsup-dark/70 hover:text-tecsup-dark p-1 rounded focus:outline-none shrink-0"
+                    class="lg:hidden text-white/90 hover:text-white p-1 rounded focus:outline-none focus:ring-2 focus:ring-white/60 shrink-0"
                     aria-label="Abrir menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <span class="text-tecsup-cyan font-bold text-base md:text-xl tracking-wide leading-tight truncate">
+            <span class="text-white font-bold text-base md:text-xl tracking-wide leading-tight truncate">
                 Sistema de Monitoreo Estudiantil
             </span>
         </div>
 
         @auth
-        <div class="hidden lg:flex items-center gap-2 text-sm text-gray-500">
-            <span class="font-medium text-gray-700">{{ Auth::user()->name }}</span>
-            <span class="px-3 py-1 rounded-full bg-tecsup-cyan/10 text-tecsup-cyan font-semibold capitalize">
+        <div class="hidden lg:flex items-center gap-2 text-sm text-white/90">
+            <span class="font-medium text-white">{{ Auth::user()->name }}</span>
+            <span class="px-3 py-1 rounded-full bg-white/20 text-white font-semibold capitalize">
                 {{ Auth::user()->rol->nombre }}
             </span>
         </div>
